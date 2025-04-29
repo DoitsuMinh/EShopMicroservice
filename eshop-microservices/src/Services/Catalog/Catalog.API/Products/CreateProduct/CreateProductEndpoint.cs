@@ -1,10 +1,14 @@
 ﻿namespace Catalog.API.Products.CreateProduct;
 
+<<<<<<< HEAD
 public record class CreateProductRequest(string Name,
                                     List<string> Category,
                                     string Description,
                                     string ImageFile,
                                     decimal Price);
+=======
+public record CreateProductRequest(string Name, List<string> Category, string Description, string ImageFile, decimal Price);
+>>>>>>> origin/main
 
 public record CreateProductResponse(Guid Id);
 

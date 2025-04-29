@@ -8,7 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Mapster" Version="7.4.0" />
+<<<<<<< HEAD:eshop-microservices/src/BuildingBlocks/BuildingBlocks.csproj
     <PackageReference Include="MediatR" Version="12.5.0" />
+=======
+    <PackageReference Include="MediatR" Version="12.4.1" />
+>>>>>>> origin/main:src/BuildingBlocks/BuildingBlocks/BuildingBlocks.csproj
   </ItemGroup>
 
 	<ItemGroup>
