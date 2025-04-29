@@ -5,7 +5,7 @@ namespace Catalog.API.Products.GetProducts;
 //public record GetProductsRequest();
 public record GetProductsResponse(IEnumerable<Product> Products);
 
-public record GetProductsByCategoryRequest(string categories);
+public record GetProductsByCategoryRequest(string Categories);
 public record GetProductsByCategoryResponse(IEnumerable<Product> Products);
 
 public class GetProductsEndpoint : ICarterModule
@@ -44,5 +44,20 @@ public class GetProductsEndpoint : ICarterModule
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithSummary("Get Products By Category")
         .WithDescription("Get Products By Category");
+
+        app.MapGet("/products/category/{category}",
+           async (string category, ISender sender) =>
+           {
+               var result = await sender.Send(new GetProductsByCategoryRequest(category));
+
+               var response = result.Adapt<GetProductsByCategoryResponse>();
+
+               return Results.Ok(response);
+           })
+       .WithName("GetProductByCategory")
+       .Produces<GetProductsByCategoryResponse>(StatusCodes.Status200OK)
+       .ProducesProblem(StatusCodes.Status400BadRequest)
+       .WithSummary("Get Product By Category")
+       .WithDescription("Get Product By Category");
     }
 }

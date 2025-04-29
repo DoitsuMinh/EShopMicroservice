@@ -13,10 +13,9 @@
 
   <ItemGroup>
     <PackageReference Include="Carter" Version="8.2.1" />
-<<<<<<< HEAD
+
     <PackageReference Include="Marten" Version="7.40.1" />
-=======
->>>>>>> origin/main
+
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
   </ItemGroup>
 

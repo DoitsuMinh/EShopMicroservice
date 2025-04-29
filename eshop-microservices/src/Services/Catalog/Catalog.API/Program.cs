@@ -8,7 +8,7 @@ builder.Services.AddMediatR(config =>
 {
     config.RegisterServicesFromAssembly(typeof(Program).Assembly);
 });
-<<<<<<< HEAD
+
 builder.Services.AddMarten(opts =>
 {
     var connectionString = builder.Configuration.GetConnectionString("Database");
@@ -19,16 +19,10 @@ builder.Services.AddMarten(opts =>
 
     opts.Connection(connectionString);
 }).UseLightweightSessions();
-=======
->>>>>>> origin/main
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
 app.MapCarter();
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
 
 app.Run();
