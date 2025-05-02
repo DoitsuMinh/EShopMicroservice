@@ -1,8 +1,17 @@
 ﻿
 namespace Catalog.API.Products.UpdateProduct;
-public record class UpdateProductRequest(Product product);
+public record class UpdateProductRequest(
+                                    //Guid Id,
+                                    //string Name,
+                                    //List<string> Category,
+                                    //string Description,
+                                    //string ImageFile,
+                                    //decimal Price,
+                                    //bool Status
+                                    Product Product
+                                    );
 
-public record UpdateProductResponse(bool isSuccess);
+public record UpdateProductResponse(bool IsSuccess);
 
 public class UpdateProductEndpoint : ICarterModule
 {
@@ -11,8 +20,11 @@ public class UpdateProductEndpoint : ICarterModule
         app.MapPut("/products", async (UpdateProductRequest request, ISender sender) =>
         {
             var command = request.Adapt<UpdateProductCommand>();
+
             var result = await sender.Send(command);
+
             var response = result.Adapt<UpdateProductResponse>();
+
             return Results.Ok(response);
         })
         .WithName("UpdateProduct")

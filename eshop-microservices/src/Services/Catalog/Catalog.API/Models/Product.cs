@@ -8,5 +8,6 @@
         public string Description { get; set; } = default!;
         public string ImageFile { get; set; } = default!;
         public decimal Price { get; set; } = default!;
+        public bool Status { get; set; } = default!;
     }
 }
