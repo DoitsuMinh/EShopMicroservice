@@ -8,15 +8,30 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
 {
     public UpdateProductCommandValidator()
     {
-        RuleFor(command => command.Product.Id)
-            .NotEmpty().WithMessage("Product Id is required.").WithMessage("Product ID is required.");
+        RuleFor(cmd => cmd.Product.Id)
+            .NotEmpty().WithMessage("Product Id is required.");
 
-        RuleFor(command => command.Product.Name)
+        RuleFor(cmd => cmd.Product.Name)
             .NotEmpty().WithMessage("Name is required.")
             .Length(2, 150).WithMessage("Invalid Name");
 
-        RuleFor(command => command.Product.Price)
+        RuleFor(cmd => cmd.Product.Description)
+            .NotEmpty().WithMessage("Description is required");
+
+        RuleFor(cmd => cmd.Product.ImageFile)
+            .NotEmpty()
+            .Must(x => IsValidImageExtension(x))
+            .WithMessage("Invalid image file");
+
+        RuleFor(cmd => cmd.Product.Price)
             .GreaterThan(0).WithMessage("Price must be greater than 0.");
+    }
+
+    private static bool IsValidImageExtension(string imageFile)
+    {
+        var validExtensions = new[] { ".jpg", ".jpeg", ".png"};
+        var extension = Path.GetExtension(imageFile)?.ToLowerInvariant();
+        return validExtensions.Contains(extension);
     }
 }
 

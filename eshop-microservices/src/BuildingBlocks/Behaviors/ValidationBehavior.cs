@@ -16,11 +16,11 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
 
         var failures = 
             validationResults
-            .Where(res => res.Errors.Any())
+            .Where(res => res.Errors.Count != 0)
             .SelectMany(res => res.Errors)
             .ToList();
 
-        if (failures.Any()) throw new ValidationException(failures);
+        if (failures.Count != 0) throw new ValidationException(failures);
 
         return await next();
     }
