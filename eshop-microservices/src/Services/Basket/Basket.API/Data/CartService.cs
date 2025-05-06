@@ -1,18 +1,16 @@
-﻿using Basket.API.Models;
-using Newtonsoft.Json;
-using Redis = StackExchange.Redis;
+﻿using Redis = StackExchange.Redis;
 
 namespace Basket.API.Data;
 
-public class CartService(Redis.IConnectionMultiplexer redis) : ICartRepository
+public class CartService(Redis.IConnectionMultiplexer redis)
 {
     private readonly Redis.IDatabase _database = redis.GetDatabase();
-    public async Task<bool> DeleteCartAsync(string key)
+    public async Task<bool> DeleteCartAsync(string key, CancellationToken cancellationToken = default)
     {
         return await _database.KeyDeleteAsync(key);
     }
 
-    public async Task<ShoppingCart?> GetCartAsync(string key)
+    public async Task<ShoppingCart?> GetCartAsync(string key, CancellationToken cancellationToken = default)
     {
         var cart = await _database.StringGetAsync(key);
         return cart.IsNullOrEmpty
@@ -20,7 +18,7 @@ public class CartService(Redis.IConnectionMultiplexer redis) : ICartRepository
             : JsonConvert.DeserializeObject<ShoppingCart>(cart!);
     }
 
-    public async Task<ShoppingCart?> SetCartAsync(ShoppingCart cart)
+    public async Task<ShoppingCart?> SetCartAsync(ShoppingCart cart, CancellationToken cancellationToken = default)
     {
         var createdCart = await _database.StringSetAsync(
                             cart.Id,

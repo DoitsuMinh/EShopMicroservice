@@ -21,19 +21,23 @@ builder.Services.AddCarter();
 //    opts.Connection(builder.Configuration.GetConnectionString("Database")!);
 //}).UseLightweightSessions();
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(s =>
+//builder.Services.AddSingleton<IConnectionMultiplexer>(s =>
+//{
+//    var connString = builder.Configuration.GetConnectionString("Redis")!;
+//    var configuration = ConfigurationOptions.Parse(connString, true);
+//    return ConnectionMultiplexer.Connect(configuration);
+//});
+builder.Services.AddScoped<ICartRepository, CacheCartService>();
+builder.Services.AddStackExchangeRedisCache(options =>
 {
-    var connString = builder.Configuration.GetConnectionString("Redis")!;
-    var configuration = ConfigurationOptions.Parse(connString, true);
-    return ConnectionMultiplexer.Connect(configuration);
+    options.Configuration = builder.Configuration.GetConnectionString("Redis")!;
 });
-builder.Services.AddScoped<ICartRepository, CartService>();
 
 //Cross-Cutting Services
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 builder.Services.AddHealthChecks()
-    .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
+    //.AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
     .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
 
 var app = builder.Build();

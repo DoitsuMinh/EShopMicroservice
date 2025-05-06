@@ -36,7 +36,7 @@ public class SetBasketCommandHandler(ICartRepository cartRepository) : ICommandH
     {
         var updatedCart = 
             await cartRepository.SetCartAsync(command.ShoppingCart) 
-            ?? throw new RedisDbException(command.ShoppingCart.Id!); ;
+            ?? throw new RedisDbException("Problem writing to redis database", command.ShoppingCart.Id!); ;
 
         return new SetBasketResult(updatedCart);
     }

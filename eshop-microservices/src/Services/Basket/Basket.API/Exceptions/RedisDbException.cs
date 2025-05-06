@@ -2,6 +2,6 @@
 
 namespace Basket.API.Exceptions;
 
-public class RedisDbException(string key): InternalServerException("Problem writing to redis database", key)
+public class RedisDbException(string name, string key): InternalServerException(name, key)
 {
 }
