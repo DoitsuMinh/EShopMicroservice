@@ -1,4 +1,6 @@
-﻿namespace Basket.API.Basket.SetBasket;
+﻿using Discount.Grpc;
+
+namespace Basket.API.Basket.SetBasket;
 
 public record SetBasketCommand(ShoppingCart ShoppingCart) : ICommand<SetBasketResult>;
 
@@ -30,7 +32,9 @@ public class SetBasketCommandValidator : AbstractValidator<SetBasketCommand>
     }
 }
 
-public class SetBasketCommandHandler(ICartRepository cartRepository) : ICommandHandler<SetBasketCommand, SetBasketResult>
+public class SetBasketCommandHandler(
+    ICartRepository cartRepository, DiscountProtoService.DiscountProtoServiceClient) 
+    : ICommandHandler<SetBasketCommand, SetBasketResult>
 {
     public async Task<SetBasketResult> Handle(SetBasketCommand command, CancellationToken cancellationToken)
     {
