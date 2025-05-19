@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
+
+// Application Services
 var assembly = typeof(Program).Assembly;
 builder.Services.AddMediatR(config =>
 {
@@ -17,6 +19,7 @@ builder.Services.AddValidatorsFromAssembly(assembly);
 
 builder.Services.AddCarter();
 
+// Data Services
 // No need to use Marten because all Basket data is stored in Redis
 //builder.Services.AddMarten(opts =>
 //{
