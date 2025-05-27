@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using FluentMigrator.Runner;
 
 namespace Odering.Infrastructure;
 
@@ -9,12 +8,17 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("Database");
 
-        //services.AddMarten(opts =>
-        //{
-        //    opts.Connection(builder.Configuration.GetConnectionString("Database")!);
-        //}).UseLightweightSessions();
+        services.AddMarten(opts =>
+        {
+            opts.Connection(connectionString!);
+        }).UseLightweightSessions();
 
-        //services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+        services.AddFluentMigratorCore()
+            .ConfigureRunner(rb => rb
+                .AddPostgres()
+                .WithGlobalConnectionString(connectionString!)
+                .ScanIn(typeof(DependencyInjection).Assembly).For.Migrations())
+            .AddLogging(lb => lb.AddFluentMigratorConsole());
 
         return services;
     }

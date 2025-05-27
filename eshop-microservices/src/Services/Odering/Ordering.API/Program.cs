@@ -1,3 +1,4 @@
+using FluentMigrator.Runner;
 using Odering.Infrastructure;
 using Ordering.API;
 using Ordering.Application;
@@ -15,6 +16,10 @@ builder.Services
 
 
 var app = builder.Build();
+
+using var scope = app.Services.CreateScope();
+var migrator = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+migrator.MigrateUp(); // Apply migrations
 
 // Confiugre the HTTP request pipeline.
 
