@@ -5,7 +5,7 @@ public class OrderItem : Entity<OrderItemId>
     // use internal constructor to prevent instantiation from outside
     internal OrderItem(OrderId orderId, ProductId productId, int quantity, decimal price)
     {
-        Id = OrderItemId.Of(Guid.NewGuid());
+        Id = OrderItemId.Of(-1);
         OrderId = orderId;
         ProductId = productId;
         Quantity = quantity;

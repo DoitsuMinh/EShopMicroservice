@@ -7,7 +7,7 @@ public record CreateProductCommand(string Name,
                                    string ImageFile,
                                    decimal Price) : ICommand<CreateProductResult>;
 
-public record CreateProductResult(Guid Id);
+public record CreateProductResult(long Id);
 
 public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
 {

@@ -18,7 +18,7 @@ public class Order : Aggregate<OrderId>
     }
 
     public static Order Create(
-        OrderId id,
+        //OrderId id,
         CustomerId customerId,
         OrderName orderName,
         Address shippingAddress,
@@ -27,7 +27,7 @@ public class Order : Aggregate<OrderId>
     {
         var order = new Order
         {
-            Id = id,
+            //Id = id,
             CustomerId = customerId,
             OrderName = orderName,
             ShippingAddress = shippingAddress,

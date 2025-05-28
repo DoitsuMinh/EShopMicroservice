@@ -2,13 +2,13 @@
 
 public record OrderId
 {
-    public Guid Value { get; }
-    private OrderId(Guid value) => Value = value;
+    public long Value { get; }
+    private OrderId(long value) => Value = value;
 
-    public static OrderId Of(Guid value)
+    public static OrderId Of(long value)
     {
         ArgumentNullException.ThrowIfNull(value);
-        if (value == Guid.Empty)
+        if (value <= 0)
             throw new DomainException("OrderId cannot be empty");
 
         return new OrderId(value);

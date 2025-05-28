@@ -1,15 +1,6 @@
 ﻿
 namespace Catalog.API.Products.UpdateProduct;
-public record class UpdateProductRequest(
-                                    //Guid Id,
-                                    //string Name,
-                                    //List<string> Category,
-                                    //string Description,
-                                    //string ImageFile,
-                                    //decimal Price,
-                                    //bool Status
-                                    Product Product
-                                    );
+public record class UpdateProductRequest(Product Product);
 
 public record UpdateProductResponse(bool IsSuccess);
 

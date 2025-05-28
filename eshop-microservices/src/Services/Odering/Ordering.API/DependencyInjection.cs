@@ -9,7 +9,7 @@ public static class DependencyInjection
         return services;
     }
 
-    public static WebApplication UserApiServices(this WebApplication app)
+    public static WebApplication UseApiServices(this WebApplication app)
     {
         //app.MapCarter();
 

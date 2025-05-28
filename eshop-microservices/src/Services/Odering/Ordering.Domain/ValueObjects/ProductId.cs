@@ -2,12 +2,12 @@
 
 public record ProductId
 {
-    public Guid Value { get; }
-    private ProductId(Guid value) => Value = value;
-    public static ProductId Of(Guid value)
+    public long Value { get; }
+    private ProductId(long value) => Value = value;
+    public static ProductId Of(long value)
     {
         ArgumentNullException.ThrowIfNull(value);
-        if (value == Guid.Empty)
+        if (value <= 0)
             throw new DomainException("ProductId cannot be empty");
 
         return new ProductId(value);

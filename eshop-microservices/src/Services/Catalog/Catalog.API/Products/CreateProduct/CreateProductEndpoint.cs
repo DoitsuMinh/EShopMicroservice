@@ -6,7 +6,7 @@ public record class CreateProductRequest(string Name,
                                     string ImageFile,
                                     decimal Price);
 
-public record CreateProductResponse(Guid Id);
+public record CreateProductResponse(long Id);
 
 public class CreateProductEndpoint : ICarterModule
 {
