@@ -8,6 +8,16 @@ using Ordering.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.AddConsole();     // make sure console logging is added
+builder.Logging.ClearProviders();
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.IncludeScopes = false;
+    options.SingleLine = true;
+    options.TimestampFormat = "HH:mm:ss ";
+    options.ColorBehavior = Microsoft.Extensions.Logging.Console.LoggerColorBehavior.Enabled;
+});
+
 // Add services to the container.
 builder.Services
     .AddApplicationServices()
@@ -23,6 +33,7 @@ app.UseApiServices();
 if(app.Environment.IsDevelopment())
 {
     await app.InitialiseDatabaseAsync();
+    await app.SeedInitialDataAsync(builder.Configuration.GetConnectionString("Database")!);
 }
 
 
@@ -30,20 +41,3 @@ if(app.Environment.IsDevelopment())
 
 
 app.Run();
-// Use IServiceProvider instead to create a scope.  
-//using (var serviceProvider = services.BuildServiceProvider())
-//using (var scope = serviceProvider.CreateScope())
-//{
-//    var migrator = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-
-//    try
-//    {
-//        migrator.MigrateUp(20250527000000); // Apply migrations  
-//    }
-//    catch (Exception ex)
-//    {
-//        // Handle exceptions during migration
-//        Console.WriteLine($"Migration failed: {ex.Message}");
-//        migrator.Rollback(0);
-//    }
-//}
