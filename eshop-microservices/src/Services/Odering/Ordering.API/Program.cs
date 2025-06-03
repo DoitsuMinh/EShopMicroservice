@@ -5,18 +5,7 @@ using Ordering.Application;
 
 
 // Shoule be using SQL Server/ MySQL with EF core, but i'm using PostgreSQL with Dapper
-
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Logging.AddConsole();     // make sure console logging is added
-builder.Logging.ClearProviders();
-builder.Logging.AddSimpleConsole(options =>
-{
-    options.IncludeScopes = false;
-    options.SingleLine = true;
-    options.TimestampFormat = "HH:mm:ss ";
-    options.ColorBehavior = Microsoft.Extensions.Logging.Console.LoggerColorBehavior.Enabled;
-});
 
 // Add services to the container.
 builder.Services
