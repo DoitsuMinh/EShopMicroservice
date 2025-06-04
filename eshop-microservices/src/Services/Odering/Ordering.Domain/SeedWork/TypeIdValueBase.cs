@@ -4,12 +4,13 @@ public abstract class TypedIdValueBase : IEquatable<TypedIdValueBase>
 {
     public Guid Value { get; }
 
+
+    /// <summary>
+    /// Constructor is protected to ensure that this base class cannot be instantiated directly.
+    /// It is intended to be used as a base for derived classes that represent specific typed IDs.
+    /// </summary>
     protected TypedIdValueBase(Guid value)
     {
-        if (value == Guid.Empty)
-        {
-            throw new ArgumentException("Value cannot be an empty GUID.", nameof(value));
-        }
         Value = value;
     }
 

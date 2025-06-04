@@ -7,6 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Abstraction\**" />
+    <Compile Remove="Events\**" />
+    <Compile Remove="Models\**" />
+    <Compile Remove="ValueObjects\**" />
+    <EmbeddedResource Remove="Abstraction\**" />
+    <EmbeddedResource Remove="Events\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="ValueObjects\**" />
+    <None Remove="Abstraction\**" />
+    <None Remove="Events\**" />
+    <None Remove="Models\**" />
+    <None Remove="ValueObjects\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MediatR" Version="12.5.0" />
   </ItemGroup>
 
