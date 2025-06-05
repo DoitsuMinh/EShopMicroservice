@@ -7,12 +7,34 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DataMapping\**" />
+    <Compile Remove="Extensions\**" />
+    <Compile Remove="Migrations\**" />
+    <EmbeddedResource Remove="DataMapping\**" />
+    <EmbeddedResource Remove="Extensions\**" />
+    <EmbeddedResource Remove="Migrations\**" />
+    <None Remove="DataMapping\**" />
+    <None Remove="Extensions\**" />
+    <None Remove="Migrations\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="DependencyInjection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="8.3.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageReference Include="Autofac.Extras.CommonServiceLocator" Version="6.1.0" />
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="FluentMigrator" Version="7.1.0" />
     <PackageReference Include="FluentMigrator.Runner" Version="7.1.0" />
     <PackageReference Include="FluentMigrator.Runner.Postgres" Version="7.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
     <PackageReference Include="Npgsql" Version="9.0.3" />
 	  <PackageReference Include="Marten" Version="7.40.1" />
+	  <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+	  <PackageReference Include="Serilog" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>

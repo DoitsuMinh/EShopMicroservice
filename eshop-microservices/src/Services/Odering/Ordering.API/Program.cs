@@ -1,5 +1,5 @@
 using Odering.Infrastructure;
-using Odering.Infrastructure.Extensions;
+//using Odering.Infrastructure.Extensions;
 using Ordering.API;
 using Ordering.Application;
 
@@ -21,8 +21,8 @@ app.UseApiServices();
 
 if(app.Environment.IsDevelopment())
 {
-    await app.InitialiseDatabaseAsync();
-    await app.SeedInitialDataAsync(builder.Configuration.GetConnectionString("Database")!);
+    //await app.InitialiseDatabaseAsync();
+    //await app.SeedInitialDataAsync(builder.Configuration.GetConnectionString("Database")!);
 }
 
 

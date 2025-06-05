@@ -115,7 +115,7 @@ public class Order: Entity
             if (existingProductOrder != null)
             {
                 // If the product exists, update its quantity and recalculate its value  
-                var existingOrderProduct = this._orderProducts.Single(x => x.ProductId == existingProductOrder.ProductId);
+                var existingOrderProduct = _orderProducts.Single(x => x.ProductId == existingProductOrder.ProductId);
                 existingOrderProduct.ChangeQuantity(product, orderProductData.Quantity, conversionRates);
             }
             else
