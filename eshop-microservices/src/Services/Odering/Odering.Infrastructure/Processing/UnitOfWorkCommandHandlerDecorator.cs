@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Odering.Infrastructure.Database;
 using Ordering.Application.Configuration.CQRS.Commands;
+using Ordering.Domain.SeedWork;
 
 namespace Odering.Infrastructure.Processing;
 
@@ -40,5 +41,10 @@ public class UnitOfWorkCommandHandlerDecorator<T> : ICommandHandler<T> where T:I
         await _unitOfWork.CommitAsync(cancellationToken);
 
         return Unit.Value;
+    }
+
+    Task IRequestHandler<T>.Handle(T request, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }
