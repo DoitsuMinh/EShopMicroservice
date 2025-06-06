@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using MediatR;
+using Ordering.Application.Configuration.CQRS.Commands;
 
 namespace Odering.Infrastructure.Processing;
 
@@ -14,5 +15,13 @@ public class ProcessingModule : Module
         builder.RegisterGenericDecorator(
             typeof(DomainEventsDispatcherNotificationHandlerDecorator<>),
             typeof(INotificationHandler<>));
+
+        // TODO: PaymentCreatedNotification
+        //
+        //
+
+        builder.RegisterGenericDecorator(
+            typeof(UnitOfWorkCommandHandlerDecorator<>),
+            typeof(ICommandHandler<>));
     }
 }

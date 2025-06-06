@@ -1,4 +1,5 @@
-﻿using Discount.Grpc;
+﻿using BuildingBlocks.CQRS.Commands;
+using Discount.Grpc;
 
 namespace Basket.API.Basket.SetBasket;
 

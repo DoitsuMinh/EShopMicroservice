@@ -1,4 +1,6 @@
-﻿namespace Catalog.API.Products.UpdateProduct;
+﻿using BuildingBlocks.CQRS.Commands;
+
+namespace Catalog.API.Products.UpdateProduct;
 
 public record UpdateProductCommand(Product Product) : ICommand<UpdateProductResult>;
 

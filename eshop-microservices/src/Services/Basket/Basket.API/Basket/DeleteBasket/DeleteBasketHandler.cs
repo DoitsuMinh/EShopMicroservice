@@ -1,4 +1,6 @@
-﻿namespace Basket.API.Basket.DeleteBasket;
+﻿using BuildingBlocks.CQRS.Commands;
+
+namespace Basket.API.Basket.DeleteBasket;
 
 public record DeleteBasketCommand(string Key) : ICommand<DeleteBasketResult>;
 

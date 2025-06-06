@@ -1,4 +1,5 @@
-﻿using Catalog.API.Products.UpdateProduct;
+﻿using BuildingBlocks.CQRS.Commands;
+using Catalog.API.Products.UpdateProduct;
 
 namespace Catalog.API.Products.DeleteProduct;
 

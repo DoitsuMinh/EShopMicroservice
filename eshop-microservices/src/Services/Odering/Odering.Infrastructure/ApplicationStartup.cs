@@ -7,6 +7,7 @@ using Odering.Infrastructure.Logging;
 using Ordering.Application;
 using Serilog;
 using Autofac.Extras.CommonServiceLocator;
+using Odering.Infrastructure.Processing;
 
 namespace Odering.Infrastructure;
 
