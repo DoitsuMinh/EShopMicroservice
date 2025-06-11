@@ -3,7 +3,7 @@
 namespace Ordering.Application.Configuration.CQRS.Commands;
 
 public interface ICommandHandler<in TCommand> :
-        IRequestHandler<TCommand> where TCommand : ICommand
+       IRequestHandler<TCommand> where TCommand : ICommand
 {
 
 }

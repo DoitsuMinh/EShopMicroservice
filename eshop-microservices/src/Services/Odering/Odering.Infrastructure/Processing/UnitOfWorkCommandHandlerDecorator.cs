@@ -1,11 +1,10 @@
-﻿using MediatR;
-using Odering.Infrastructure.Database;
+﻿using Odering.Infrastructure.Database;
 using Ordering.Application.Configuration.CQRS.Commands;
 using Ordering.Domain.SeedWork;
 
 namespace Odering.Infrastructure.Processing;
 
-public class UnitOfWorkCommandHandlerDecorator<T> : ICommandHandler<T> where T:ICommand
+public class UnitOfWorkCommandHandlerDecorator<T> : ICommandHandler<T> where T : ICommand
 {
     private readonly ICommandHandler<T> _decorated;
 
@@ -14,8 +13,8 @@ public class UnitOfWorkCommandHandlerDecorator<T> : ICommandHandler<T> where T:I
     private readonly OrdersContext _ordersContext;
 
     public UnitOfWorkCommandHandlerDecorator(
-        ICommandHandler<T> decorated, 
-        IUnitOfWork unitOfWork, 
+        ICommandHandler<T> decorated,
+        IUnitOfWork unitOfWork,
         OrdersContext ordersContext)
     {
         _decorated = decorated;
@@ -23,7 +22,7 @@ public class UnitOfWorkCommandHandlerDecorator<T> : ICommandHandler<T> where T:I
         _ordersContext = ordersContext;
     }
 
-    public async Task<Unit> Handle(T command, CancellationToken cancellationToken)
+    public async Task Handle(T command, CancellationToken cancellationToken)
     {
         await _decorated.Handle(command, cancellationToken);
 
@@ -39,12 +38,5 @@ public class UnitOfWorkCommandHandlerDecorator<T> : ICommandHandler<T> where T:I
         }
 
         await _unitOfWork.CommitAsync(cancellationToken);
-
-        return Unit.Value;
-    }
-
-    Task IRequestHandler<T>.Handle(T request, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
+    }    
 }

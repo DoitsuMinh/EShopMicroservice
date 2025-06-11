@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using MediatR;
+using Odering.Infrastructure.Processing.InternalCommands;
 using Ordering.Application.Configuration.CQRS.Commands;
 
 namespace Odering.Infrastructure.Processing;
@@ -23,5 +24,13 @@ public class ProcessingModule : Module
         builder.RegisterGenericDecorator(
             typeof(UnitOfWorkCommandHandlerDecorator<>),
             typeof(ICommandHandler<>));
+
+        builder.RegisterGenericDecorator(
+            typeof(UnitOfWorkCommandHandlerWithResultDecorator<,>),
+            typeof(ICommandHandler<,>));
+
+        builder.RegisterType<CommandsDispatcher>()
+            .As<ICommandsDispatcher>()
+            .InstancePerLifetimeScope();
     }
 }
