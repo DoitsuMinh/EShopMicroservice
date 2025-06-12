@@ -7,7 +7,7 @@ public class LoggingModule : Module
 {
     private readonly ILogger _logger;
 
-    internal LoggingModule(ILogger logger)
+    public LoggingModule(ILogger logger)
     {
         _logger = logger;
     }

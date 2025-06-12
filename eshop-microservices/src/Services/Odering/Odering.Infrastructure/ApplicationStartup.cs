@@ -8,6 +8,8 @@ using Ordering.Application;
 using Serilog;
 using Autofac.Extras.CommonServiceLocator;
 using Odering.Infrastructure.Processing;
+using Odering.Infrastructure.Domain;
+
 
 namespace Odering.Infrastructure;
 
@@ -49,7 +51,11 @@ public class ApplicationStartup
         // Register modules to the container
         container.RegisterModule(new LoggingModule(logger));
         container.RegisterModule(new DataAccessModule(connectionString));
+        container.RegisterModule(new MediatorModule());
         container.RegisterModule(new ProcessingModule());
+        container.RegisterModule(new DomainModule());
+
+        // TODO: Register Email module
 
         // Register the execution context accessor as a singleton instance
         container.RegisterInstance(executionContextAccessor);
