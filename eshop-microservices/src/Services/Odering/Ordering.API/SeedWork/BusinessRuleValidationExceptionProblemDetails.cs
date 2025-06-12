@@ -6,7 +6,7 @@ public class BusinessRuleValidationExceptionProblemDetails: Microsoft.AspNetCore
 {
     public BusinessRuleValidationExceptionProblemDetails(BusinessRuleValidationException exception)
     {
-        Title = "Business rult validation error";
+        Title = "Business rule validation error";
         Detail = exception.Details;
         Status = StatusCodes.Status409Conflict; // Bad Request
         Type = "https://example.com/probs/business-rule-validation-error";

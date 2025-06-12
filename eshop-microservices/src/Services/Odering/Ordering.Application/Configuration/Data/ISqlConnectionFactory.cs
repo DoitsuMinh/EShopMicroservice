@@ -4,5 +4,5 @@ namespace Ordering.Application.Configuration.Data;
 
 public interface ISqlConnectionFactory
 {
-    IDbConnection CreateOpenConnection();
+    IDbConnection GetOpenConnection();
 }

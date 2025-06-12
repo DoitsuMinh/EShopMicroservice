@@ -14,7 +14,7 @@ public class SqlConnectionFactory : ISqlConnectionFactory, IDisposable
         _connectionString = connectionString;
     }
 
-    public IDbConnection CreateOpenConnection()
+    public IDbConnection GetOpenConnection()
     {
         if (_connection == null || _connection.State != ConnectionState.Open)
         {
