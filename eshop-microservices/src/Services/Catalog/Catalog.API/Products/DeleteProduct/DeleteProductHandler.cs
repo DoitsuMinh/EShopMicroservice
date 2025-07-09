@@ -11,7 +11,7 @@ public class DeleteProductCommandValidator : AbstractValidator<DeleteProductComm
 {
     public DeleteProductCommandValidator ()
     {
-        RuleFor(c => c.Id).NotEmpty().WithMessage("Invalid Id input");
+        RuleFor(c => c.Id).GreaterThan(0).NotEmpty().WithMessage("Invalid Id input");
     }
 }
 

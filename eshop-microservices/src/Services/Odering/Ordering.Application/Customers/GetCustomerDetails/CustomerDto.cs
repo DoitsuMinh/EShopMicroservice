@@ -8,5 +8,5 @@ public class CustomerDto
 
     public string Email { get; set; }
 
-    public string WelcomeEmailWasSent { get; set; }
+    public bool WelcomeEmailWasSent { get; set; }
 }

@@ -47,6 +47,8 @@ public class Startup
 
             services.AddMemoryCache();
 
+            services.AddSwaggerDocumentation();
+
             services.AddProblemDetails(x =>
             {
                 x.Map<InvalidCommandException>(ex => new InvalidCommandProblemDetails(ex));
@@ -107,6 +109,9 @@ public class Startup
         {
             endpoints.MapControllers();
         });
+
+        app.UseSwaggerDocumentation();
+
         _logger.Information("Application configured successfully.");
     }
 

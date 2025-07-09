@@ -4,11 +4,13 @@ using Autofac.Extensions.DependencyInjection;
 using Autofac.Features.Variance;
 using FluentValidation;
 using MediatR;
+using MediatR.Pipeline;
 using Ordering.Application.Configuration.Validation;
+using System.Reflection;
 
 namespace Odering.Infrastructure.Processing;
 
-public class MediatorModule : Module
+public class MediatorModule : Autofac.Module
 {
     protected override void Load(ContainerBuilder builder)
     {
@@ -18,16 +20,18 @@ public class MediatorModule : Module
                 typeof(IValidator<>)
             ));
 
-        builder.RegisterAssemblyTypes(typeof(MediatorModule).Assembly).AsImplementedInterfaces();
+        builder.RegisterAssemblyTypes(typeof(IMediator).GetTypeInfo().Assembly).AsImplementedInterfaces();
 
         var mediatrOpenTypes = new[]
         {
             typeof(IRequestHandler<,>),
+            typeof(IRequestExceptionHandler<,,>),
+            typeof(IRequestExceptionAction<,>),
             typeof(INotificationHandler<>),
-            typeof(IValidator<>)
+            typeof(IValidator<>),
         };
 
-        foreach(var mediatrOpenType in mediatrOpenTypes)
+        foreach (var mediatrOpenType in mediatrOpenTypes)
         {
             builder
                 .RegisterAssemblyTypes(Assemblies.Application, ThisAssembly)
@@ -35,6 +39,9 @@ public class MediatorModule : Module
                 .FindConstructorsWith(new AllConstructorFinder())
                 .AsImplementedInterfaces();
         }
+
+        builder.RegisterGeneric(typeof(RequestPostProcessorBehavior<,>)).As(typeof(IPipelineBehavior<,>));
+        builder.RegisterGeneric(typeof(RequestPreProcessorBehavior<,>)).As(typeof(IPipelineBehavior<,>));
 
 
         builder.RegisterGeneric(typeof(CommandValidationBehavior<,>)).As(typeof(IPipelineBehavior<,>));
@@ -55,7 +62,7 @@ public class MediatorModule : Module
             {
                 throw new ArgumentException("Types cannot be null or empty.", nameof(types));
             }
-            if(!types.All(x => x.IsGenericTypeDefinition))
+            if (!types.All(x => x.IsGenericTypeDefinition))
             {
                 throw new ArgumentException("All types must be generic type definitions.", nameof(types));
             }
@@ -73,8 +80,8 @@ public class MediatorModule : Module
                 var defs = component.Services
                     .OfType<TypedService>()
                     .Select(x => x.ServiceType.GetGenericTypeDefinition());
-                
-                if(defs.Any(_types.Contains))
+
+                if (defs.Any(_types.Contains))
                 {
                     yield return component;
                 }

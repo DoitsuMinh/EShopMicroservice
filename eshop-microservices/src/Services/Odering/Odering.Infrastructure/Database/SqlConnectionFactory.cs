@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using Npgsql;
 using Ordering.Application.Configuration.Data;
 using System.Data;
 
@@ -18,7 +19,8 @@ public class SqlConnectionFactory : ISqlConnectionFactory, IDisposable
     {
         if (_connection == null || _connection.State != ConnectionState.Open)
         {
-            _connection = new SqlConnection(_connectionString);
+            // open postgres connection
+            _connection = new NpgsqlConnection(_connectionString);
             _connection.Open();
         }
 

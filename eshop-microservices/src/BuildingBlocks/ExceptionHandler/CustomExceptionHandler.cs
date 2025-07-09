@@ -19,12 +19,12 @@ public class CustomExceptionHandler
                 exceptionMessage, DateTime.UtcNow);
         (string Details, string Title, int StatusCode) = exception switch
         {
-            InternalServerException => (
+            ValidationException => (
                 exception.Message,
                 exception.GetType().Name,
-                httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError
+                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest
             ),
-            ValidationException => (
+            BadHttpRequestException => (
                 exception.Message,
                 exception.GetType().Name,
                 httpContext.Response.StatusCode = StatusCodes.Status400BadRequest
@@ -40,6 +40,11 @@ public class CustomExceptionHandler
                exception.GetType().Name,
                httpContext.Response.StatusCode = StatusCodes.Status404NotFound
            ),
+            InternalServerException => (
+                 exception.Message,
+                 exception.GetType().Name,
+                 httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError
+             ),
             _ =>
             (
                 exception.Message,

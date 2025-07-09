@@ -1,4 +1,5 @@
 using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,12 +35,27 @@ builder.Services
     .AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!);
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new()
+    {
+        Title = builder.Environment.ApplicationName,
+        Version = "v1"
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
 app.MapCarter();
 
 app.UseExceptionHandler(options => { });
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+}
 
 app.UseHealthChecks("/health",
     new HealthCheckOptions
