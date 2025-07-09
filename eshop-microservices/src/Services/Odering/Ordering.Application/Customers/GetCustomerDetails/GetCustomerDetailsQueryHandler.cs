@@ -4,7 +4,7 @@ using Ordering.Application.Configuration.Queries;
 
 namespace Ordering.Application.Customers.GetCustomerDetails;
 
-public class GetCustomerDetailsQueryHandler : IQueryHandler<GetCustomerDetailsQuery, CustomerDto>
+public class GetCustomerDetailsQueryHandler : IQueryHandler<GetCustomerDetailsQuery, CustomerDetailsDto>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
 
@@ -13,7 +13,7 @@ public class GetCustomerDetailsQueryHandler : IQueryHandler<GetCustomerDetailsQu
         _sqlConnectionFactory = sqlConnectionFactory;
     }
 
-    public async Task<CustomerDto> Handle(GetCustomerDetailsQuery request, CancellationToken cancellationToken)
+    public async Task<CustomerDetailsDto> Handle(GetCustomerDetailsQuery request, CancellationToken cancellationToken)
     {
         string sql = "SELECT " +
                                "Customer.\"Id\", " +
@@ -31,7 +31,7 @@ public class GetCustomerDetailsQueryHandler : IQueryHandler<GetCustomerDetailsQu
         var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
         {
-            var result = new CustomerDto
+            var result = new CustomerDetailsDto
             {
                 Id = !reader.IsDBNull(reader.GetOrdinal("Id")) ? reader.GetGuid(reader.GetOrdinal("Id")) : Guid.Empty,
                 Name = !reader.IsDBNull(reader.GetOrdinal("Name")) ? reader.GetString(reader.GetOrdinal("Name")) : string.Empty,

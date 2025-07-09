@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Ordering.Application.Customers;
 using Ordering.Application.Customers.GetCustomerDetails;
+using Ordering.Application.Customers.RegisterCustomer;
 
 namespace Ordering.API.Customers;
 
@@ -29,5 +31,17 @@ public class CustomersController : Controller
         var result = await _mediator.Send(new GetCustomerDetailsQuery(customerId));
 
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Register new customer.
+    /// </summary>
+    /// <param name="request"></param>
+    [HttpPost("")]
+    [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateCustomer([FromBody] RegisterCustomerRequest request)
+    {
+        var customer = await _mediator.Send(new RegisterCustomerCommand(request.Email, request.Name));
+        return Created(string.Empty, customer);
     }
 }

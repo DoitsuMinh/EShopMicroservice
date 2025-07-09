@@ -7,7 +7,6 @@ namespace Odering.Infrastructure.Processing;
 internal static class Assemblies
 {
     public static readonly Assembly Application =
-        // TODO: Replace with the actual assembly reference for the application layer
         typeof(GetCustomerDetailsQuery).Assembly;
 
 

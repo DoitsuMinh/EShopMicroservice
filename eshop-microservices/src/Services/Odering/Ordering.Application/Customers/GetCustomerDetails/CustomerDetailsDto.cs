@@ -1,6 +1,6 @@
 ﻿namespace Ordering.Application.Customers.GetCustomerDetails;
 
-public class CustomerDto
+public class CustomerDetailsDto
 {
     public Guid Id { get; set; }
 

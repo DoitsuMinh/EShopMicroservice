@@ -6,6 +6,8 @@ using FluentValidation;
 using MediatR;
 using MediatR.Pipeline;
 using Ordering.Application.Configuration.Validation;
+using Ordering.Application.Customers.GetCustomerDetails;
+using Ordering.Application.Customers.RegisterCustomer;
 using System.Reflection;
 
 namespace Odering.Infrastructure.Processing;
@@ -34,7 +36,7 @@ public class MediatorModule : Autofac.Module
         foreach (var mediatrOpenType in mediatrOpenTypes)
         {
             builder
-                .RegisterAssemblyTypes(Assemblies.Application, ThisAssembly)
+                .RegisterAssemblyTypes(Assemblies.Application, typeof(RegisterCustomerCommandHandler).Assembly, ThisAssembly)
                 .AsClosedTypesOf(mediatrOpenType)
                 .FindConstructorsWith(new AllConstructorFinder())
                 .AsImplementedInterfaces();
