@@ -8,7 +8,6 @@ using Ordering.Application.Configuration.Validation;
 using Ordering.Domain.SeedWork;
 using Ordering.Infrastructure.Caching;
 using Serilog;
-using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.SystemConsole.Themes;
 using ILogger = Serilog.ILogger;
@@ -53,6 +52,7 @@ public class Startup
             {
                 x.Map<InvalidCommandException>(ex => new InvalidCommandProblemDetails(ex));
                 x.Map<BusinessRuleValidationException>(ex => new BusinessRuleValidationExceptionProblemDetails(ex));
+                x.Map<EntityNotFoundException>(ex => new EntityNotFoundProblemDetails(ex));
             });
 
             services.AddHttpContextAccessor();
@@ -93,14 +93,14 @@ public class Startup
     {
         _logger.Information("Configuring application ...");
         app.UseMiddleware<CorrelationMiddleware>();
-
-        if(env.IsDevelopment())
+        app.UseProblemDetails();
+        if (env.IsDevelopment())
         {
-            app.UseDeveloperExceptionPage();
+            //app.UseDeveloperExceptionPage();
         } 
         else
         {
-            app.UseProblemDetails();
+            //app.UseProblemDetails();
         }
 
         app.UseRouting();

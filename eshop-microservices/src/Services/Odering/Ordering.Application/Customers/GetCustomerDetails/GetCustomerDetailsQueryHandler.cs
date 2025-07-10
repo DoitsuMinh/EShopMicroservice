@@ -1,6 +1,8 @@
-﻿using Npgsql;
+﻿using Dapper;
+using Npgsql;
 using Ordering.Application.Configuration.Data;
 using Ordering.Application.Configuration.Queries;
+using Ordering.Domain.SeedWork;
 
 namespace Ordering.Application.Customers.GetCustomerDetails;
 
@@ -15,32 +17,19 @@ public class GetCustomerDetailsQueryHandler : IQueryHandler<GetCustomerDetailsQu
 
     public async Task<CustomerDetailsDto> Handle(GetCustomerDetailsQuery request, CancellationToken cancellationToken)
     {
-        string sql = "SELECT " +
-                               "Customer.\"Id\", " +
-                               "Customer.\"Name\", " +
-                               "Customer.\"Email\", " +
-                               "Customer.\"WelcomeEmailWasSent\" " +
-                               "FROM orders.v_Customers AS Customer " +
-                               "WHERE Customer.\"Id\" = @CustomerId";
+        var connection = (NpgsqlConnection)_sqlConnectionFactory.GetOpenConnection();
 
-        using var connection = (NpgsqlConnection)_sqlConnectionFactory.GetOpenConnection();
+        const string sql = @"
+            SELECT 
+                c.""Id"", 
+                c.""Name"", 
+                c.""Email"", 
+                c.""WelcomeEmailWasSent"" 
+            FROM orders.v_Customers AS c 
+            WHERE c.""Id"" = @CustomerId";
 
-        using var command = new NpgsqlCommand(sql, connection);
-        command.Parameters.AddWithValue("@CustomerId", NpgsqlTypes.NpgsqlDbType.Uuid ,request.CustomerId);
+        var customer = await connection.QuerySingleOrDefaultAsync<CustomerDetailsDto>(sql, new { request.CustomerId });
 
-        var reader = await command.ExecuteReaderAsync(cancellationToken);
-        while (await reader.ReadAsync(cancellationToken))
-        {
-            var result = new CustomerDetailsDto
-            {
-                Id = !reader.IsDBNull(reader.GetOrdinal("Id")) ? reader.GetGuid(reader.GetOrdinal("Id")) : Guid.Empty,
-                Name = !reader.IsDBNull(reader.GetOrdinal("Name")) ? reader.GetString(reader.GetOrdinal("Name")) : string.Empty,
-                Email =!reader.IsDBNull(reader.GetOrdinal("Email")) ? reader.GetString(reader.GetOrdinal("Email")) : string.Empty,
-                WelcomeEmailWasSent = reader.GetBoolean(reader.GetOrdinal("WelcomeEmailWasSent"))
-            };
-            return result;
-        }
-
-        return null;
+        return customer ?? throw new EntityNotFoundException(nameof(CustomerDetailsDto), request.CustomerId);
     }
 }

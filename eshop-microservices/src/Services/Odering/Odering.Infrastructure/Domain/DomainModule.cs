@@ -1,4 +1,6 @@
 ﻿using Autofac;
+using Ordering.Application.Customers.DomainService;
+using Ordering.Domain.Customers;
 
 namespace Odering.Infrastructure.Domain;
 
@@ -14,5 +16,8 @@ public class DomainModule : Module
 
         // Example of registering a repository:
         // builder.RegisterType<SomeRepository>().As<ISomeRepository>().InstancePerLifetimeScope();
+        builder.RegisterType<CustomerUniquenessChecker>()
+            .As<ICustomerUniquenessChecker>()
+            .InstancePerLifetimeScope();
     }
 }

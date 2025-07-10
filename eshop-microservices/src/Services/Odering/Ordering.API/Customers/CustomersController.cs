@@ -15,7 +15,9 @@ public class CustomersController : Controller
 {
     private readonly IMediator _mediator;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public CustomersController(IMediator mediator)
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
@@ -26,11 +28,16 @@ public class CustomersController : Controller
     /// <param name="customerId"></param>
     [Route("{customerId:guid}")]
     [HttpGet]
-    public async Task<IActionResult> GetCustomer(Guid customerId)
+    [ProducesResponseType(typeof(CustomerDetailsDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<CustomerDetailsDto>> GetCustomer(Guid customerId)
     {
-        var result = await _mediator.Send(new GetCustomerDetailsQuery(customerId));
+        var customer = await _mediator.Send(new GetCustomerDetailsQuery(customerId));
 
-        return Ok(result);
+        if (customer == null)
+        {
+            return NotFound();
+        }
+        return Ok(customer);
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 ﻿using Odering.Infrastructure.Database;
 using Ordering.Domain.Customers;
+using Ordering.Domain.SeedWork;
 
 namespace Odering.Infrastructure.Customers;
 
@@ -17,8 +18,11 @@ public class CustomerRepository : ICustomerRepository
         await _ordersContext.Customers.AddAsync(customer);
     }
 
-    public Task<Customer> GetByIdAsync(CustomerId id)
+    public async Task<Customer> GetByIdAsync(CustomerId id)
     {
-        throw new NotImplementedException();
+        return await _ordersContext.Customers
+            .Include(c => c.Orders)
+            .FindAsync(id)
+            ?? throw new EntityNotFoundException($"Customer with ID {id.Value} not found.");
     }
 }

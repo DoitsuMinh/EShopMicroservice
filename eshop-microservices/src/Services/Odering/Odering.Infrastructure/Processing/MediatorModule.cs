@@ -36,7 +36,7 @@ public class MediatorModule : Autofac.Module
         foreach (var mediatrOpenType in mediatrOpenTypes)
         {
             builder
-                .RegisterAssemblyTypes(Assemblies.Application, typeof(RegisterCustomerCommandHandler).Assembly, ThisAssembly)
+                .RegisterAssemblyTypes(Assemblies.Application, typeof(RegisterCustomerCommand).Assembly, ThisAssembly)
                 .AsClosedTypesOf(mediatrOpenType)
                 .FindConstructorsWith(new AllConstructorFinder())
                 .AsImplementedInterfaces();

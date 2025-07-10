@@ -15,7 +15,7 @@ public class CommandValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
         _validators = validators;
     }
 
-    public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         var errors = _validators
             .Select(v => v.Validate(request))
@@ -37,6 +37,6 @@ public class CommandValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
             throw new InvalidCommandException(errorBuilder.ToString(), string.Empty);
         }
 
-        return next(cancellationToken);
+        return await next(cancellationToken);
     }
 }

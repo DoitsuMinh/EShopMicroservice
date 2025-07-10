@@ -6,7 +6,7 @@ internal class InvalidCommandProblemDetails: Microsoft.AspNetCore.Mvc.ProblemDet
 {
     public InvalidCommandProblemDetails(InvalidCommandException exception)
     {
-        Title = "Invalid Command";
+        Title = "Not Found";
         Detail = exception.Details;
         Status = StatusCodes.Status400BadRequest; // Bad Request
         Type = "https://example.com/probs/invalid-command";

@@ -55,11 +55,6 @@ internal class StronglyTypedIdValueConverterSelector : ValueConverterSelector
                         providerClrType: typeof(Guid),
                         factory: valueConverterInfo =>
                         {
-                            // Ensure mapping hints are provided.
-                            if (valueConverterInfo.MappingHints == null)
-                            {
-                                throw new ArgumentNullException(nameof(valueConverterInfo.MappingHints), "MappingHints cannot be null.");
-                            }
                             // Create the value converter instance using reflection.
                             return (ValueConverter)Activator.CreateInstance(converterType, valueConverterInfo.MappingHints)!;
                         });

@@ -1,8 +1,12 @@
 ﻿using Autofac;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Odering.Infrastructure.Customers;
+using Odering.Infrastructure.Domain;
 using Odering.Infrastructure.SeedWork;
 using Ordering.Application.Configuration.Data;
+using Ordering.Domain.Customers;
+using Ordering.Domain.SeedWork;
 
 namespace Odering.Infrastructure.Database;
 
@@ -32,6 +36,16 @@ public class DataAccessModule : Module
         builder.RegisterType<SqlConnectionFactory>()
             .As<ISqlConnectionFactory>()
             .WithParameter("connectionString", _connectionString)
+            .InstancePerLifetimeScope();
+
+        // Register UnitOfWork as a transient service, allowing it to be created per request.
+        builder.RegisterType<UnitOfWork>()
+            .As<IUnitOfWork>()
+            .InstancePerLifetimeScope();
+
+        // Register ICustomerrepository as a transient service, allowing it to be created per request.
+        builder.RegisterType<CustomerRepository>()
+            .As<ICustomerRepository>()
             .InstancePerLifetimeScope();
 
         // Register the OrdersContext DbContext with custom options.

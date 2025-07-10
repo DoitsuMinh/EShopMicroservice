@@ -25,6 +25,7 @@ public class RegisterCustomerCommandHandler : ICommandHandler<RegisterCustomerCo
             _customerUniquenessChecker);
 
         await _customerRepository.AddAsync(customer);
+
         await _unitOfWork.CommitAsync(cancellationToken);
 
         return new CustomerDto { Id = customer.Id.Value };
