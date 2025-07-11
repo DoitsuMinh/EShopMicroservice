@@ -1,4 +1,7 @@
-﻿using Odering.Infrastructure.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using Odering.Infrastructure.Database;
+using Odering.Infrastructure.Domain.Customers;
+using Odering.Infrastructure.SeedWork;
 using Ordering.Domain.Customers;
 using Ordering.Domain.SeedWork;
 
@@ -20,9 +23,20 @@ public class CustomerRepository : ICustomerRepository
 
     public async Task<Customer> GetByIdAsync(CustomerId id)
     {
-        return await _ordersContext.Customers
-            .Include(c => c.Orders)
-            .FindAsync(id)
-            ?? throw new EntityNotFoundException($"Customer with ID {id.Value} not found.");
+        /// Get customer by ID with eager loading of orders and products
+        try
+        {
+            return await _ordersContext.Customers
+            .IncludePaths(
+                CustomerEntityTypeConfiguration.OrderList, 
+                CustomerEntityTypeConfiguration.OrderProducts)
+            .SingleAsync(c => c.Id == id) ?? throw new EntityNotFoundException(nameof(Customer), id.Value);
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception(ex.Message);
+        }
+
     }
 }

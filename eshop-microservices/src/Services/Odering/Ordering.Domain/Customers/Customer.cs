@@ -11,11 +11,13 @@ public class Customer : Entity, IAggregateRoot
 {
     public CustomerId Id { get; private set; }
 
-    public string Email { get; private set; }
-    public string Name { get; private set; }
-    public bool WelcomeEmailWasSent { get; private set; }
+    private string _email;
+
+    private string _name;
 
     private readonly List<Order> _orders;
+
+    private bool _welcomeEmailWasSent;
     private Customer()
     {
         // EF Core
@@ -25,9 +27,9 @@ public class Customer : Entity, IAggregateRoot
     public Customer(string email, string name)
     {
         Id = new CustomerId(Guid.NewGuid());
-        Email = email;
-        Name = name;
-        WelcomeEmailWasSent = false;
+        _email = email;
+        _name = name;
+        _welcomeEmailWasSent = false;
         _orders = [];
 
         AddDomainEvent(new CustomerRegisteredEvent(Id));

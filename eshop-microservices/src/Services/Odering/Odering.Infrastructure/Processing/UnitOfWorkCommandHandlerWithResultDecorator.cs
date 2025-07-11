@@ -1,4 +1,5 @@
-﻿using Odering.Infrastructure.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using Odering.Infrastructure.Database;
 using Ordering.Application.Configuration.CQRS.Commands;
 using Ordering.Domain.SeedWork;
 
@@ -26,7 +27,7 @@ public class UnitOfWorkCommandHandlerWithResultDecorator<TCommand, TResult> : IC
         if(command is InternalCommandBase)
         {
             var internalCommand =
-                await _ordersContext.InternalCommands.FirstOrDefaultAsync(x => x.Id == command.Id, token: cancellationToken);
+                await _ordersContext.InternalCommands.FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken: cancellationToken);
             if (internalCommand != null)
             {
                 internalCommand.ProcessedDate = DateTime.UtcNow;

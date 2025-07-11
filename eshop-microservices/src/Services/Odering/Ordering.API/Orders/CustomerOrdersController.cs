@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Ordering.Application.Orders.GetCustomerOrders;
+using Ordering.Application.Orders.PlaceCustomerOrders;
 using System.Net;
 
 namespace Ordering.API.Orders;
@@ -33,14 +34,18 @@ public class CustomerOrdersController : Controller
         return Ok(customerOrders);
     }
 
+    /// <summary>
+    /// adds a new order for a specific customer.
+    /// </summary>
+    [Route("{customerId:guid}/orders")]
     [HttpPost]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     public async Task<IActionResult> AddCustomerOrder(
         [FromRoute] Guid customerId,
         [FromBody] CustomerOrderRequest request)
     {
-        await _mediator.Send(new PlaceCustomerOrderCommand());
+        var id = await _mediator.Send(new PlaceCustomerOrderCommand(customerId, request.Products, request.Currency));
 
-        return Created(string.Empty, null);
+        return Created(string.Empty, id);
     }
 }

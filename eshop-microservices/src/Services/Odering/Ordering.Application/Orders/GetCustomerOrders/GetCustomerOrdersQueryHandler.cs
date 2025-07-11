@@ -19,7 +19,7 @@ public class GetCustomerOrdersQueryHandler : IQueryHandler<GetCustomerOrdersQuer
         const string sql = @"
             SELECT 
                 o.*
-            FROM orders.v_Orders AS o 
+            FROM orders.v_orders AS o 
             WHERE o.""CustomerId"" = @CustomerId";
 
         var orders = await connection.QueryAsync<OrderDto>(sql, new { request.CustomerId });

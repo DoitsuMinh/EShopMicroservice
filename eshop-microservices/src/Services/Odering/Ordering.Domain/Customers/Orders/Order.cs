@@ -18,7 +18,7 @@ public class Order: Entity
     private List<OrderProduct> _orderProducts;
     private OrderStatus _status;
     private DateTime _orderDate;
-    private DateTime _orderChangeDate;
+    private DateTime? _orderChangeDate;
 
     private Order()
     {
@@ -64,6 +64,9 @@ public class Order: Entity
 
         // Set the initial status of the order to "Placed"  
         _status = OrderStatus.Placed;
+
+        // Set default isRemoved
+        _isRemoved = false;
     }
 
     private void CalculateOrderValue()

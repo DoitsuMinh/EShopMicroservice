@@ -1,6 +1,8 @@
 ﻿using Autofac;
+using Odering.Infrastructure.Domain.ForeignExchanges;
 using Ordering.Application.Customers.DomainService;
 using Ordering.Domain.Customers;
+using Ordering.Domain.ForeignExchange;
 
 namespace Odering.Infrastructure.Domain;
 
@@ -18,6 +20,10 @@ public class DomainModule : Module
         // builder.RegisterType<SomeRepository>().As<ISomeRepository>().InstancePerLifetimeScope();
         builder.RegisterType<CustomerUniquenessChecker>()
             .As<ICustomerUniquenessChecker>()
+            .InstancePerLifetimeScope();
+
+        builder.RegisterType<ForeignExchange>()
+            .As<IForeignExchange>()
             .InstancePerLifetimeScope();
     }
 }

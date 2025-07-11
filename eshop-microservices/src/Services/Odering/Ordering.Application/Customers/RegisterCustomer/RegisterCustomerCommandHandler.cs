@@ -17,11 +17,11 @@ public class RegisterCustomerCommandHandler : ICommandHandler<RegisterCustomerCo
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<CustomerDto> Handle(RegisterCustomerCommand request, CancellationToken cancellationToken)
+    public async Task<CustomerDto> Handle(RegisterCustomerCommand command, CancellationToken cancellationToken)
     {
         var customer = Customer.CreateRegistered(
-            request.Email,
-            request.Name,
+            command.Email,
+            command.Name,
             _customerUniquenessChecker);
 
         await _customerRepository.AddAsync(customer);
