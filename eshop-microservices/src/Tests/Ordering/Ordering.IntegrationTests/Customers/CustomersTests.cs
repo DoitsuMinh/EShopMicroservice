@@ -1,12 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Odering.Infrastructure.Processing;
+using Ordering.Application.Customers.GetCustomerDetails;
+using Ordering.Application.Customers.RegisterCustomer;
+using Ordering.IntegrationTests.SeedWork;
 
-namespace Ordering.IntegrationTests.Customers
+namespace Ordering.IntegrationTests.Customers;
+
+public class CustomersTests : TestBase
 {
-    internal class CustomersTests
+    [Test]
+    public async Task RegisterCustomerTest()
     {
+        const string email = "newCust@mail.com";
+        const string name = "Test Customer";
+
+        var customer = await CommandsExecutor.Execute(new RegisterCustomerCommand(email, name));
+        var customerDetails = await QueriesExecutor.Execute(new GetCustomerDetailsQuery(customer.Id));
+
+        Assert.That(customerDetails, Is.Not.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(customerDetails.Email, Is.EqualTo(email));
+            Assert.That(customerDetails.Name, Is.EqualTo(name));
+        });
+
     }
 }

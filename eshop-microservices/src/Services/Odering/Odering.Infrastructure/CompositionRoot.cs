@@ -12,4 +12,9 @@ public class CompositionRoot
     {
         _container = container;
     }
+
+    internal static ILifetimeScope BeginLifeTimeScope()
+    {
+        return _container.BeginLifetimeScope();
+    }
 }
