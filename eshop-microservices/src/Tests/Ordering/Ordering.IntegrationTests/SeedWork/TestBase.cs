@@ -17,8 +17,7 @@ public class TestBase
     {
         const string connectionStringEnviromentVariable = "ORDERING_INTEGRATION_TESTS_CONNECTION_STRING";
         ConnectionString = Environment.GetEnvironmentVariable(connectionStringEnviromentVariable) ??
-                           throw new InvalidOperationException(
-                               $"Environment variable '{connectionStringEnviromentVariable}' is not set.");
+                           TEMP_CON_STRING;
 
         await using var connection = new NpgsqlConnection(ConnectionString);
         await ClearDatabase(connection);
@@ -28,14 +27,19 @@ public class TestBase
         ApplicationStartup.Initialize(
             new ServiceCollection(),
             ConnectionString,
-            new CachesStore(),
+            new CacheStore(),
             Logger.None,
             ExecutionContext);
     }
 
     private async Task ClearDatabase(NpgsqlConnection connection)
     {
-        const string sql = "";
+        const string sql =  "DELETE FROM app.InternalCommands; " +
+                            "DELETE FROM app.OutboxMessages; " +
+                            "DELETE FROM orders.OrderProducts; " +
+                            "DELETE FROM orders.Orders; " +
+                            "DELETE FROM payments.Payments; " +
+                            "DELETE FROM orders.Customers; ";
 
         await connection.ExecuteScalarAsync(sql);
     }

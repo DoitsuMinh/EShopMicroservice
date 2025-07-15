@@ -10,7 +10,7 @@ public class CustomersTests : TestBase
     [Test]
     public async Task RegisterCustomerTest()
     {
-        const string email = "newCust@mail.com";
+        const string email = "newcustomer@mail.com";
         const string name = "Test Customer";
 
         var customer = await CommandsExecutor.Execute(new RegisterCustomerCommand(email, name));

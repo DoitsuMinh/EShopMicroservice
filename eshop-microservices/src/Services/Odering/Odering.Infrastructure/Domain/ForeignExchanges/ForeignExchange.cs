@@ -14,19 +14,29 @@ public class ForeignExchange : IForeignExchange
 
     public List<ConversionRate> GetConversionRates()
     {
-        var ratesCache = _cacheStore.Get(new ConversionRatesCacheKey());
-        if (ratesCache != null)
+        try
         {
-            return ratesCache.Rates;
+            var cacheKey = new ConversionRatesCacheKey();
+            var ratesCache = _cacheStore.Get(cacheKey);
+            if (ratesCache != null)
+            {
+                return ratesCache.Rates;
+            }
+
+            List<ConversionRate> rates = GetConversionRatesFromExternalApi();
+
+            _cacheStore.Add(new ConversionRatesCache(rates), new ConversionRatesCacheKey(), TimeSpan.FromDays(1));
+            return rates;
         }
+        catch (Exception ex)
+        {
+            // Log the exception (not implemented here)
+            throw new InvalidOperationException("Failed to retrieve conversion rates.", ex);
 
-        List<ConversionRate> rates = GetConversionRatesFromExternalApi();
-
-        _cacheStore.Add(new ConversionRatesCache(rates), new ConversionRatesCacheKey(), TimeSpan.FromDays(1));
-        return rates;
+        }
     }
 
-    // This should be in DB
+    // This should be real-time data from an external API or in DB.
     private List<ConversionRate> GetConversionRatesFromExternalApi()
     {
         return new List<ConversionRate>

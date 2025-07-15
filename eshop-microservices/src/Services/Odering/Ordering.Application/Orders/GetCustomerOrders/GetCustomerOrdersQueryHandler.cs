@@ -16,10 +16,13 @@ public class GetCustomerOrdersQueryHandler : IQueryHandler<GetCustomerOrdersQuer
     public async Task<List<OrderDto>> Handle(GetCustomerOrdersQuery request, CancellationToken cancellationToken)
     {
         var connection = _sqlConnectionFactory.GetOpenConnection();
-        const string sql = @"
-            SELECT 
-                o.*
-            FROM orders.v_orders AS o 
+        const string sql =
+            @"SELECT 
+                ""Id"" AS OrderId,
+                ""Value"", 
+                ""IsRemoved"", 
+                ""Currency""
+            FROM orders.v_orders AS o
             WHERE o.""CustomerId"" = @CustomerId";
 
         var orders = await connection.QueryAsync<OrderDto>(sql, new { request.CustomerId });

@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using Ordering.Application.Configuration.CQRS.Commands;
 using System.Text;
 
 namespace Ordering.Application.Configuration.Validation;

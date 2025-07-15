@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Ordering.Application.Orders.GetCustomerOrderDetails;
 using Ordering.Application.Orders.GetCustomerOrders;
 using Ordering.Application.Orders.PlaceCustomerOrders;
 using System.Net;
@@ -28,10 +29,23 @@ public class CustomerOrdersController : Controller
     [Route("{customerId:guid}/orders")]
     [HttpGet]
     [ProducesResponseType(typeof(List<OrderDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetCustomerOrdes(Guid customerId)
+    public async Task<ActionResult<List<OrderDto>>> GetCustomerOrdes(Guid customerId)
     {
         var customerOrders = await _mediator.Send(new GetCustomerOrdersQuery(customerId));
         return Ok(customerOrders);
+    }
+
+    /// <summary>
+    /// Retrieves the details of a specific order for a customer by order ID.
+    /// </summary>
+    [Route("{customerId}/orders/{orderId:guid}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OrderDetailsDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<OrderDetailsDto>> GetCustomerOrderDetails(
+        [FromRoute] Guid orderId)
+    {
+        var orderDetails = await _mediator.Send(new GetCustomerOrderDetailsQuery(orderId));
+        return Ok(orderDetails);
     }
 
     /// <summary>
