@@ -17,11 +17,7 @@ public class CustomersTests : TestBase
         var customerDetails = await QueriesExecutor.Execute(new GetCustomerDetailsQuery(customer.Id));
 
         Assert.That(customerDetails, Is.Not.Null);
-        Assert.Multiple(() =>
-        {
-            Assert.That(customerDetails.Email, Is.EqualTo(email));
-            Assert.That(customerDetails.Name, Is.EqualTo(name));
-        });
-
+        Assert.That(customerDetails.Email, Is.EqualTo(email));
+        Assert.That(customerDetails.Name, Is.EqualTo(name));
     }
 }

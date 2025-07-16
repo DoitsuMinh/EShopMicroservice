@@ -3,7 +3,7 @@ using Ordering.Domain.SeedWork;
 
 namespace Ordering.Domain.Customers.Rules;
 
-internal class OrderMustHaveAtLeastOneProductRule : IBusinessRule
+public class OrderMustHaveAtLeastOneProductRule : IBusinessRule
 {
     private readonly List<OrderProductData> _orderProductsData;
     public OrderMustHaveAtLeastOneProductRule(List<OrderProductData> orderProductsData)

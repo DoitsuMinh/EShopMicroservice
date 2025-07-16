@@ -16,12 +16,19 @@ public class MoneyValue : ValueObject
     public static MoneyValue Of(decimal value, string currency)
     {
         CheckRule(new MoneyValueMustHaveCurrencyRule(currency));
-        return new MoneyValue(value, currency);
+        
+        var formattedValue = RoundToThreeDecimalPlacesForCurrency(value);
+
+        //CheckRule(new MoneyValueMustBeRoundedToThreeDecimalPlacesRule(formattedValue));
+
+        return new MoneyValue(formattedValue, currency);
     }
 
     public static MoneyValue Of(MoneyValue value)
     {
-        return new MoneyValue(value.Value, value.Currency);
+        var formattedValue = RoundToThreeDecimalPlacesForCurrency(value.Value);
+        //CheckRule(new MoneyValueMustBeRoundedToThreeDecimalPlacesRule(formattedValue));
+        return new MoneyValue(formattedValue, value.Currency);
     }
 
     public static MoneyValue operator +(MoneyValue left, MoneyValue right)
@@ -40,18 +47,18 @@ public class MoneyValue : ValueObject
     {
         return new MoneyValue(number * right.Value, right.Currency);
     }
+
+    private static decimal RoundToThreeDecimalPlacesForCurrency(decimal value)
+    {
+        return Math.Round(value, 3, MidpointRounding.AwayFromZero);
+    }
 }
 
 public static class SumExtensions
 {
     /// <summary>
     /// Sums a collection of MoneyValue objects using a selector function.
-    /// Like lambda in python
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="src"></param>
-    /// <param name="selector"></param>
-    /// <returns></returns>
     public static MoneyValue Sum<T>(this IEnumerable<T> src, Func<T, MoneyValue> selector)
     {
         return MoneyValue.Of(src.Select(selector).Aggregate((x, y) => x + y));

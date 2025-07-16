@@ -3,7 +3,7 @@ using Ordering.Domain.SeedWork;
 
 namespace Ordering.Domain.Customers.Rules;
 
-internal class CustomerCannotOrderMoreThan20OrdersOnTheSameDayRule : IBusinessRule
+public class CustomerCannotOrderMoreThan20OrdersOnTheSameDayRule : IBusinessRule
 {
     private readonly IList<Order> _orders;
     public CustomerCannotOrderMoreThan20OrdersOnTheSameDayRule(IList<Order> orders)
