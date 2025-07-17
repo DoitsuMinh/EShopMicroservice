@@ -1,4 +1,7 @@
 ﻿using FluentMigrator.Runner;
+using Odering.Infrastructure.ExternalServices.FreeCurrencyApi;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace Odering.Infrastructure;
 
@@ -19,6 +22,21 @@ public static class DependencyInjection
                 .WithGlobalConnectionString(connectionString!)
                 .ScanIn(typeof(DependencyInjection).Assembly).For.Migrations())
             .AddLogging(lb => lb.AddFluentMigratorConsole());
+
+        // Configure FreeCurrencyApi options
+        services.Configure<FreeCurrencyApiOptions>(
+            configuration.GetSection(FreeCurrencyApiOptions.SectionName));
+
+        // Register HttpClient for FreeCurrencyApi
+        services.AddHttpClient<IFreeCurrencyApiService, FreeCurrencyApiService>((serviceProvider, client) =>
+        {
+            var options = serviceProvider.GetRequiredService<IOptions<FreeCurrencyApiOptions>>().Value;
+            client.BaseAddress = new Uri(options.BaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+        });
+
+        // Register other services...
+        services.AddScoped<IForeignExchange, ForeignExchange>();
 
         return services;
     }
