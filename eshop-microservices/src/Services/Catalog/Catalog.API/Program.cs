@@ -1,6 +1,6 @@
 using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,23 +17,17 @@ builder.Services.AddValidatorsFromAssembly(assembly);
 
 builder.Services.AddCarter();
 
-builder.Services.AddMarten(opts =>
+builder.Services.AddDbContext<CatalogContext>(opts =>
 {
-    opts.Connection(builder.Configuration.GetConnectionString("Database")!);
+    opts.UseSqlServer(builder.Configuration.GetConnectionString("Database")!);
 
-})
-.UseLightweightSessions();
-
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.InitializeMartenWith<CatalogInitialData>();
-}
+});
 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 builder.Services
     .AddHealthChecks()
-    .AddNpgSql(builder.Configuration.GetConnectionString("Database")!);
+    .AddSqlServer(builder.Configuration.GetConnectionString("Database")!);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -55,6 +49,14 @@ app.UseExceptionHandler(options => { });
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
+
+    // Create database and seed data without migrations
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<CatalogContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+        await CatalogInitialData.SeedAsync(dbContext);
+    }
 }
 
 app.UseHealthChecks("/health",

@@ -15,15 +15,15 @@ public class DeleteProductCommandValidator : AbstractValidator<DeleteProductComm
     }
 }
 
-public class DeleteProductCommandHandler(IDocumentSession session)
+public class DeleteProductCommandHandler(CatalogContext context)
     : ICommandHandler<DeleteProductCommand, DeleteProductResult>
 {
     public async Task<DeleteProductResult> Handle(DeleteProductCommand command, CancellationToken cancellationToken)
     {
-        var product = await session.LoadAsync<Product>(command.Id, cancellationToken) ?? throw new ProductNotFoundException(command.Id);
+        var product = await context.Products.FindAsync([command.Id], cancellationToken) ?? throw new ProductNotFoundException(command.Id);
         product.Status = false;
-        session.Update(product);
-        await session.SaveChangesAsync(cancellationToken);
+        context.Products.Update(product);
+        await context.SaveChangesAsync(cancellationToken);
         var result = new DeleteProductResult(true);
         return result;
     }

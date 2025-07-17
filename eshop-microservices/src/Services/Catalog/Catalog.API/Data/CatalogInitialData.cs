@@ -1,19 +1,17 @@
-﻿using Marten.Schema;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.API.Data;
 
-public class CatalogInitialData : IInitialData
+public static class CatalogInitialData
 {
-    public async Task Populate(IDocumentStore store, CancellationToken cancellation)
+    public static async Task SeedAsync(CatalogContext context)
     {
-        using var session = store.LightweightSession();
-        if (await session.Query<Product>().AnyAsync(cancellation))
+        if (await context.Products.AnyAsync())
             return;
 
-        // Marten will automatically create the schema for the Product class
-        session.Store<Product>(GetPreconfiguredProducts());
-
-        await session.SaveChangesAsync(cancellation);
+        var products = GetPreconfiguredProducts();
+        await context.Products.AddRangeAsync(products);
+        await context.SaveChangesAsync();
     }
 
     private static IEnumerable<Product> GetPreconfiguredProducts() =>
@@ -35,7 +33,6 @@ public class CatalogInitialData : IInitialData
             Status = true
         },
         new Product {
-
             Name = "Tactical Vest",
             Category = ["Gear", "Protection", "Military"],
             Description = "Modular tactical vest with ballistic plate support",
@@ -44,7 +41,6 @@ public class CatalogInitialData : IInitialData
             Status = true
         },
         new Product {
-
             Name = "Camouflage Uniform Set",
             Category = ["Apparel", "Uniform", "Military"],
             Description = "Multi-terrain camo uniform with moisture-wicking fabric",
@@ -53,7 +49,6 @@ public class CatalogInitialData : IInitialData
             Status = true
         },
         new Product {
-
             Name = "Military Backpack 60L",
             Category = ["Gear", "Bags", "Military"],
             Description = "Heavy-duty 60-liter rucksack with Molle system",
@@ -62,7 +57,6 @@ public class CatalogInitialData : IInitialData
             Status = true
         },
         new Product {
-
             Name = "Field Radio Transceiver",
             Category = ["Communication", "Equipment", "Military"],
             Description = "Encrypted VHF/UHF handheld field radio",
@@ -71,7 +65,6 @@ public class CatalogInitialData : IInitialData
             Status = true
         },
         new Product {
-
             Name = "Combat Knife",
             Category = ["Weapons", "Tools", "Military"],
             Description = "Full-tang steel combat knife with tactical sheath",
@@ -80,7 +73,6 @@ public class CatalogInitialData : IInitialData
             Status = true
         },
         new Product {
-
             Name = "Ballistic Helmet",
             Category = ["Protection", "Headgear", "Military"],
             Description = "NIJ Level IIIA ballistic combat helmet",
@@ -89,7 +81,6 @@ public class CatalogInitialData : IInitialData
             Status = true
         },
         new Product {
-
             Name = "Drone Recon System",
             Category = ["Surveillance", "Technology", "Military"],
             Description = "Reconnaissance drone with real-time HD video and GPS",
@@ -106,5 +97,4 @@ public class CatalogInitialData : IInitialData
             Status = true
         }
     ];
-
 }

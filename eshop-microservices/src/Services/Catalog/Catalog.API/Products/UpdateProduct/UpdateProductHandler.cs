@@ -37,12 +37,12 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
     }
 }
 
-public class UpdateProductCommandHandler(IDocumentSession session)
+public class UpdateProductCommandHandler(CatalogContext context)
     : ICommandHandler<UpdateProductCommand, UpdateProductResult>
 {
     public async Task<UpdateProductResult> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
     {
-        var product = await session.LoadAsync<Product>(command.Product.Id, cancellationToken) ?? throw new ProductNotFoundException(command.Product.Id);
+        var product = await context.Products.FindAsync([command.Product.Id], cancellationToken) ?? throw new ProductNotFoundException(command.Product.Id);
         product.Name = command.Product.Name;
         product.Category = command.Product.Category;
         product.Description = command.Product.Description;
@@ -50,8 +50,8 @@ public class UpdateProductCommandHandler(IDocumentSession session)
         product.Price = command.Product.Price;
         product.Status = command.Product.Status;
 
-        session.Update(product);
-        await session.SaveChangesAsync(cancellationToken);
+        context.Products.Update(product);
+        await context.SaveChangesAsync(cancellationToken);
         var result = new UpdateProductResult(true);
         return result;
     }

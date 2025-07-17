@@ -41,7 +41,7 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
     }
 }
 
-internal class CreateProductCommandHandler(IDocumentSession session)
+internal class CreateProductCommandHandler(CatalogContext context)
     : ICommandHandler<CreateProductCommand, CreateProductResult>
 {
     public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
@@ -59,8 +59,8 @@ internal class CreateProductCommandHandler(IDocumentSession session)
             Price = command.Price
         };
         // save to db
-        session.Store(product);
-        await session.SaveChangesAsync(cancellationToken);
+        context.Products.Add(product);
+        await context.SaveChangesAsync(cancellationToken);
 
         //return result
         return new CreateProductResult(product.Id);

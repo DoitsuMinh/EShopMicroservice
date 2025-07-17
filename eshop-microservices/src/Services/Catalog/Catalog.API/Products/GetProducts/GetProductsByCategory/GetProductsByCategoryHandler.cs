@@ -1,18 +1,20 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
+
 namespace Catalog.API.Products.GetProducts.GetProductsByCategory;
 
 public record GetProductsByCategoryQuery(string Categories) : IQuery<GetProductsByCategoryResult>;
 public record GetProductsByCategoryResult(IEnumerable<Product> Products);
 
-public class GetProductsByCategoryCommandHandler(IDocumentSession session)
+public class GetProductsByCategoryCommandHandler(CatalogContext context)
     : IQueryHandler<GetProductsByCategoryQuery, GetProductsByCategoryResult>
 {
     public async Task<GetProductsByCategoryResult> Handle(GetProductsByCategoryQuery query, CancellationToken cancellationToken)
     {
-        var products = await session.Query<Product>()
+        var products = await context.Products
                                     .Where(p => p.Category.Contains(query.Categories))
                                     .ToListAsync(cancellationToken);
-        
+
         return new GetProductsByCategoryResult(products);
     }
 
