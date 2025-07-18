@@ -28,7 +28,7 @@ public class PlaceCustomerOrderCommandHandler : ICommandHandler<PlaceCustomerOrd
         
         var allProductPrices = await ProductPriceProvider.GetAllProductPricesAsync(_sqlConnectionFactory.GetOpenConnection());
 
-        var conversionRates = _foreignExchange.GetConversionRates();
+        var conversionRates = await _foreignExchange.GetConversionRatesAsync();
 
         var orderProductsData = command.Products.Select(x => new OrderProductData(new ProductId(x.Id), x.Quantity)).ToList();
 

@@ -2,6 +2,7 @@
 using Odering.Infrastructure.Processing.InternalCommands;
 using Ordering.Domain.Customers;
 using Ordering.Domain.Customers.Orders;
+using Ordering.Domain.Products;
 
 namespace Odering.Infrastructure.Database;
 
@@ -12,7 +13,8 @@ public class OrdersContext: DbContext
     {
     }
     // Define DbSets for your entities here
-     public DbSet<Order> Orders { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<Product> Products { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<InternalCommand> InternalCommands { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)

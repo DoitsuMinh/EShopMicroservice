@@ -46,6 +46,8 @@ public class Startup
 
             services.AddMemoryCache();
 
+            services.AddHttpClient();
+
             services.AddSwaggerDocumentation();
 
             services.AddProblemDetails(x =>

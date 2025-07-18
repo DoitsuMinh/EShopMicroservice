@@ -1,144 +1,121 @@
-﻿using Odering.Infrastructure.Caching;
-using Odering.Infrastructure.ExternalServices.FreeCurrencyApi;
-using Odering.Infrastructure.ExternalServices.FreeCurrencyApi.Models;
+﻿using Newtonsoft.Json;
+using Odering.Infrastructure.Caching;
 using Ordering.Domain.ForeignExchange;
-using Microsoft.Extensions.Options;
-using Serilog;
+using Ordering.Domain.ForeignExchange.ExternalService;
 
 namespace Odering.Infrastructure.Domain.ForeignExchanges;
 
 public class ForeignExchange : IForeignExchange
 {
     private readonly ICacheStore _cacheStore;
-    private readonly IFreeCurrencyApiService _freeCurrencyApiService;
-    private readonly FreeCurrencyApiOptions _options;
-    private readonly ILogger _logger;
+    private readonly HttpClient _httpClient;
+    private readonly IConfiguration _config;
 
-    public ForeignExchange(
-        ICacheStore cacheStore,
-        IFreeCurrencyApiService freeCurrencyApiService,
-        IOptions<FreeCurrencyApiOptions> options,
-        ILogger logger)
+    public ForeignExchange(ICacheStore cacheStore, IHttpClientFactory httpClientFactory, IConfiguration config)
     {
         _cacheStore = cacheStore;
-        _freeCurrencyApiService = freeCurrencyApiService;
-        _options = options.Value;
-        _logger = logger;
+        _httpClient = httpClientFactory.CreateClient("FreeCurrencyApi");
+        _config = config;
+        _httpClient.BaseAddress = new Uri(_config["FreeCurrencyApi:BaseUrl"].ToString());
     }
 
-    public List<ConversionRate> GetConversionRates()
+    public async Task<List<ConversionRate>> GetConversionRatesAsync()
     {
         try
         {
-            _logger.Information("Attempting to retrieve conversion rates from cache");
-            
-            var cacheKey = new ConversionRatesCacheKey();
-            var ratesCache = _cacheStore.Get(cacheKey);
+            var ratesCache = _cacheStore.Get(new ConversionRatesCacheKey());
+
             if (ratesCache != null)
             {
-                _logger.Information("Conversion rates retrieved from cache successfully. Count: {RatesCount}", ratesCache.Rates.Count);
                 return ratesCache.Rates;
             }
 
-            _logger.Information("No cached conversion rates found. Fetching from external API");
-            
-            var rates = GetConversionRatesFromExternalApiAsync().GetAwaiter().GetResult();
+            var rates = await GetConversionRatesFromExternalApiAsync();            
 
-            _logger.Information("Successfully retrieved {RatesCount} conversion rates from external API. Caching for 1 hour", rates.Count);
-            
-            _cacheStore.Add(new ConversionRatesCache(rates), new ConversionRatesCacheKey(), TimeSpan.FromHours(1));
+            _cacheStore.Add(
+                new ConversionRatesCache(rates), 
+                new ConversionRatesCacheKey(), 
+                DateTime.Now.Date.AddDays(1));
+
             return rates;
         }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Failed to retrieve conversion rates from external API. Falling back to hardcoded rates");
-
-            // Fallback to hardcoded rates if external API fails
-            return GetFallbackRates();
+            throw new InvalidOperationException("Failed to retrieve conversion rates.", ex);
         }
     }
 
     private async Task<List<ConversionRate>> GetConversionRatesFromExternalApiAsync()
     {
-        var request = new FreeCurrencyApiRequest
-        {
-            ApiKey = _options.ApiKey,
-            BaseCurrency = _options.BaseCurrency,
-            Currencies = _options.SupportedCurrencies
-        };
+        var request = new FreeCurrencyApiRequest(
+            _config["FreeCurrencyApi:ApiKey"] ?? string.Empty,
+            _config["FreeCurrencyApi:BaseCurrency"] ?? string.Empty,
+            _config.GetSection("FreeCurrencyApi:SupportedCurrencies").Get<List<string>>() ?? []);
 
-        _logger.Information("Calling external API for conversion rates with base currency {BaseCurrency} and {CurrencyCount} target currencies", 
-            _options.BaseCurrency, _options.SupportedCurrencies.Count);
+        var response = await GetLastesRatesAsync(request);
 
-        var response = await _freeCurrencyApiService.GetLatestRatesAsync(request);
         var rates = new List<ConversionRate>();
 
-        _logger.Debug("Processing {ResponseCount} currency rates from API response", response.Data.Count);
-
-        // Convert API response to ConversionRate objects
-        foreach (var rate in response.Data)
+        if (response.Data is not null)
         {
-            // Forward conversion (USD to target currency)
-            rates.Add(new ConversionRate(_options.BaseCurrency, rate.Key, rate.Value));
+            foreach (var rate in response.Data)
+            {
+                // Forward conversion (Base currency to target currency)
+                rates.Add(new ConversionRate(request.BaseCurrency, rate.Key, rate.Value));
 
-            // Reverse conversion (target currency to USD)
-            if (rate.Value != 0)
-            {
-                rates.Add(new ConversionRate(rate.Key, _options.BaseCurrency, 1 / rate.Value));
-            }
-            else
-            {
-                _logger.Warning("Zero conversion rate detected for currency {Currency}. Skipping reverse conversion", rate.Key);
+                // Reverse conversion (Target currency to base currency)
+                if (rate.Value != 0)
+                {
+                    rates.Add(new ConversionRate(rate.Key, request.BaseCurrency, 1 / rate.Value));
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Zero conversion rate detected for currency {rate.Key}.");
+                }
             }
         }
-
-        // Add cross-currency conversions if needed
-        var initialRateCount = rates.Count;
-        AddCrossCurrencyRates(rates);
-        
-        _logger.Information("Added {CrossCurrencyCount} cross-currency conversion rates", rates.Count - initialRateCount);
-
         return rates;
     }
 
-    private void AddCrossCurrencyRates(List<ConversionRate> rates)
+    private async Task<FreeCurrencyApiResponse> GetLastesRatesAsync(FreeCurrencyApiRequest request, CancellationToken cancellationToken = default)
     {
-        _logger.Debug("Adding cross-currency conversion rates");
-        
-        // Example: Add EUR to AUD conversion using USD as base
-        var eurToUsd = rates.FirstOrDefault(r => r.SourceCurrency == "EUR" && r.TargetCurrency == "USD");
-        var usdToAud = rates.FirstOrDefault(r => r.SourceCurrency == "USD" && r.TargetCurrency == "AUD");
+        try
+        {
+            var currencies = string.Join(",", request.Currencies);
 
-        if (eurToUsd != null && usdToAud != null)
-        {
-            var eurToAudRate = eurToUsd.Factor * usdToAud.Factor;
-            rates.Add(new ConversionRate("EUR", "AUD", eurToAudRate));
-            rates.Add(new ConversionRate("AUD", "EUR", 1 / eurToAudRate));
-            
-            _logger.Debug("Added EUR-AUD cross-currency rates: EUR->AUD={EurToAudRate:F4}, AUD->EUR={AudToEurRate:F4}", 
-                eurToAudRate, 1 / eurToAudRate);
+            var url = request.URL;
+
+            var response = await _httpClient.GetAsync(url, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            var jsonContent = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            var result = JsonConvert.DeserializeObject<FreeCurrencyApiResponse>(jsonContent);
+
+            return result ?? throw new JsonException();
         }
-        else
+        catch (HttpRequestException ex)
         {
-            _logger.Warning("Unable to create EUR-AUD cross-currency rates. EUR->USD: {EurToUsdExists}, USD->AUD: {UsdToAudExists}", 
-                eurToUsd != null, usdToAud != null);
+            throw new InvalidOperationException("Failed to retrieve currency rates from external API.", ex);
+        }
+        catch (TaskCanceledException ex)
+        {
+            throw new InvalidOperationException("Request timeout while retrieving currency rates from external API.", ex);
+        }
+        catch (JsonException ex)
+        {
+            throw new InvalidOperationException("Invalid response format from external API.", ex);
         }
     }
 
-    private List<ConversionRate> GetFallbackRates()
+    // Communication with external API. Here is only mock.
+    private List<ConversionRate> GetConversionRatesFromMock()
     {
-        _logger.Warning("Using fallback currency rates due to external API failure");
-        
-        var fallbackRates = new List<ConversionRate>
-        {
+        return [
             new ConversionRate("USD", "AUD", 1.52m),
             new ConversionRate("AUD", "USD", 0.66m),
             new ConversionRate("USD", "EUR", 0.85m),
             new ConversionRate("EUR", "USD", 1.18m),
-        };
-        
-        _logger.Information("Fallback rates loaded: {FallbackRateCount} conversion rates available", fallbackRates.Count);
-        
-        return fallbackRates;
+        ];
     }
 }
