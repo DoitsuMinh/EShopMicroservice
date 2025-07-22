@@ -2,7 +2,9 @@
 using Autofac;
 using Autofac.Core;
 using MediatR;
+using Newtonsoft.Json;
 using Odering.Infrastructure.Database;
+using Odering.Infrastructure.Processing.Outbox;
 using Ordering.Application.Configuration.DomainEvents;
 using Ordering.Domain.SeedWork;
 
@@ -64,5 +66,17 @@ public class DomainEventsDispatcher : IDomainEventsDispatcher
 
         // Wait for all publishing tasks to complete  
         await Task.WhenAll(tasks);
+
+        foreach (var domainEventNotification in domainEventNotifications)
+        {
+            string type = domainEventNotification.GetType().FullName ?? string.Empty;
+            var data  = JsonConvert.SerializeObject(domainEventNotification);
+            // Log the domain event notification (optional, for debugging purposes)
+            OutBoxMessage outBoxMessage = new OutBoxMessage(
+                domainEventNotification.DomainEvent.OccuredOn,
+                type,
+                data);
+            _ordersContext.OutBoxMessages.Add(outBoxMessage);
+        }
     }
 }

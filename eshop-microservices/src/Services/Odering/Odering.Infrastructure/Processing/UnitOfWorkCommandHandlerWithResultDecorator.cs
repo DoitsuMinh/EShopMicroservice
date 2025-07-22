@@ -24,7 +24,7 @@ public class UnitOfWorkCommandHandlerWithResultDecorator<TCommand, TResult> : IC
     {
         var result = await _decorated.Handle(command, cancellationToken);
 
-        if(command is InternalCommandBase)
+        if(command is InternalCommandBase<TResult>)
         {
             var internalCommand =
                 await _ordersContext.InternalCommands.FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken: cancellationToken);
