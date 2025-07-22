@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Odering.Infrastructure.Processing.InternalCommands;
+using Odering.Infrastructure.Processing.Outbox;
 using Ordering.Domain.Customers;
 using Ordering.Domain.Customers.Orders;
 using Ordering.Domain.Products;
@@ -17,6 +18,7 @@ public class OrdersContext: DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<InternalCommand> InternalCommands { get; set; }
+    public DbSet<OutBoxMessage> OutBoxMessages { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrdersContext).Assembly);
