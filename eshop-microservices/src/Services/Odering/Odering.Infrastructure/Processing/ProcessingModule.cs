@@ -3,6 +3,8 @@ using MediatR;
 using Odering.Infrastructure.Logging;
 using Odering.Infrastructure.Processing.InternalCommands;
 using Ordering.Application.Configuration.CQRS.Commands;
+using Ordering.Application.Configuration.DomainEvents;
+using Ordering.Domain.Customers.Events;
 
 namespace Odering.Infrastructure.Processing;
 
@@ -25,6 +27,9 @@ public class ProcessingModule : Module
         // TODO: PaymentCreatedNotification
         //
         //
+
+        //builder.RegisterAssemblyTypes(typeof(OrderPlacedEvent).GetTypeInfo().Assembly)
+        //       .AsClosedTypesOf(typeof(IDomainEventNotification<>)).InstancePerDependency();
 
         var serviice = new List<string>();
 

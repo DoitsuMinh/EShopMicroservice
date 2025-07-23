@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Odering.Infrastructure.Database;
-using Odering.Infrastructure.Domain.Customers;
 using Odering.Infrastructure.SeedWork;
 using Ordering.Domain.Customers;
 using Ordering.Domain.SeedWork;
 
-namespace Odering.Infrastructure.Customers;
+namespace Odering.Infrastructure.Domain.Customers;
 
 public class CustomerRepository : ICustomerRepository
 {
