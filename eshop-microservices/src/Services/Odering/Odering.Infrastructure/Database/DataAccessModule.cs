@@ -1,8 +1,8 @@
 ﻿using Autofac;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Odering.Infrastructure.Customers;
 using Odering.Infrastructure.Domain;
+using Odering.Infrastructure.Domain.Customers;
 using Odering.Infrastructure.Domain.Products;
 using Odering.Infrastructure.SeedWork;
 using Ordering.Application.Configuration.Data;

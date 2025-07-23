@@ -27,8 +27,6 @@ internal class CommandsDispatcher : ICommandsDispatcher
 
         internalCommand.ProcessedDate = DateTime.UtcNow;
 
-        await this._mediator.Send(command);
-
-        //throw new NotImplementedException("This method is not implemented yet. Please implement the logic to dispatch commands based on the internal command ID.");
+        await _mediator.Send(command);
     }
 }

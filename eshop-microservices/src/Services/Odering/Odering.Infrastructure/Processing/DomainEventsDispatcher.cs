@@ -1,5 +1,4 @@
-﻿
-using Autofac;
+﻿using Autofac;
 using Autofac.Core;
 using MediatR;
 using Newtonsoft.Json;
@@ -50,9 +49,13 @@ public class DomainEventsDispatcher : IDomainEventsDispatcher
 
             // Resolve the notification instance from the Autofac container  
             var domainNotification = _scope.ResolveOptional(domainNotificationWithGenericType, new List<Parameter>
-           {
-                new NamedParameter("domainEvent", domainEvent)
-           });
+            {
+                    new NamedParameter("domainEvent", domainEvent)
+            });
+            if (domainNotification != null)
+            {
+                domainEventNotifications.Add((IDomainEventNotification<IDomainEvent>)domainNotification);
+            }
         }
 
         // Clear domain events from the entities to prevent re-processing  
@@ -71,12 +74,13 @@ public class DomainEventsDispatcher : IDomainEventsDispatcher
         {
             string type = domainEventNotification.GetType().FullName ?? string.Empty;
             var data  = JsonConvert.SerializeObject(domainEventNotification);
-            // Log the domain event notification (optional, for debugging purposes)
-            OutBoxMessage outBoxMessage = new OutBoxMessage(
+
+            var outBoxMessage = new OutboxMessage(
                 domainEventNotification.DomainEvent.OccuredOn,
                 type,
                 data);
-            _ordersContext.OutBoxMessages.Add(outBoxMessage);
+
+            _ordersContext.OutboxMessages.Add(outBoxMessage);
         }
     }
 }

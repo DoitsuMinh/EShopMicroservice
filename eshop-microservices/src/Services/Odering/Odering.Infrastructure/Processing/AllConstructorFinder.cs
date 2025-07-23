@@ -12,7 +12,6 @@ internal class AllConstructorFinder : IConstructorFinder
         var result = _cache.GetOrAdd(targetType,t => t.GetTypeInfo().DeclaredConstructors.ToArray());
 
         return result.Length > 0 ? result :
-            // throw new NoConstructorsFoundException
             throw new NoConstructorsFoundException(targetType, this);
     }
 }

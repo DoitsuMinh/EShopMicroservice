@@ -4,6 +4,7 @@ using Odering.Infrastructure;
 using Ordering.API.Configuration;
 using Ordering.API.SeedWork;
 using Ordering.Application;
+using Ordering.Application.Configuration.Emails;
 using Ordering.Application.Configuration.Validation;
 using Ordering.Domain.SeedWork;
 using Ordering.Infrastructure.Caching;
@@ -65,10 +66,9 @@ public class Startup
 
             var children = _configuration.GetSection("Caching").GetChildren();
             var cachingConfiguration = children.ToDictionary(child => child.Key, child => TimeSpan.Parse(child.Value));
-            // TODO: Email configuration
-            //
-            //
+            var emailsSettings = _configuration.GetSection("EmailsSettings").Get<EmailsSettings>();
             var memoryCache = serviceProvider.GetService<IMemoryCache>();
+            var emailSender = serviceProvider.GetService<IEmailSender>();
 
             var result = ApplicationStartup.Initialize(
                 services,
@@ -76,6 +76,8 @@ public class Startup
                     $"Connection string '{ConnectionStrings}' is not configured."
                     ),
                 cacheStore: new MemoryCacheStore(memoryCache, cachingConfiguration),
+                emailSender,
+                emailsSettings,
                 logger: _logger,
                 executionContextAccessor: executionContextAccessor
                 );

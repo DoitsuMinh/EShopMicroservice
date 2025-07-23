@@ -18,7 +18,7 @@ public class OrdersContext: DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<Customer> Customers { get; set; }
     public DbSet<InternalCommand> InternalCommands { get; set; }
-    public DbSet<OutBoxMessage> OutBoxMessages { get; set; }
+    public DbSet<OutboxMessage> OutboxMessages { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrdersContext).Assembly);
