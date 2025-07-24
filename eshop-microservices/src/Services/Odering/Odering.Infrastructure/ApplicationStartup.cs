@@ -139,8 +139,6 @@ public class ApplicationStartup
             container.RegisterModule(new EmailModule(emailsSettings));
         }
 
-        // TODO: Register Email module
-
         // Register the execution context accessor as a singleton instance
         container.RegisterInstance(executionContextAccessor);
 

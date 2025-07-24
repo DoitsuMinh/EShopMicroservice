@@ -31,7 +31,6 @@ public class ProcessingModule : Module
         //builder.RegisterAssemblyTypes(typeof(OrderPlacedEvent).GetTypeInfo().Assembly)
         //       .AsClosedTypesOf(typeof(IDomainEventNotification<>)).InstancePerDependency();
 
-        var serviice = new List<string>();
 
         builder.RegisterGenericDecorator(
             typeof(UnitOfWorkCommandHandlerDecorator<>),
