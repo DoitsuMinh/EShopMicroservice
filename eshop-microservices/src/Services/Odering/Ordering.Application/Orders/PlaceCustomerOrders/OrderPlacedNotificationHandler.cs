@@ -1,5 +1,4 @@
-﻿using Dapper;
-using MediatR;
+﻿using MediatR;
 using Ordering.Application.Configuration.Data;
 using Ordering.Application.Configuration.Emails;
 
