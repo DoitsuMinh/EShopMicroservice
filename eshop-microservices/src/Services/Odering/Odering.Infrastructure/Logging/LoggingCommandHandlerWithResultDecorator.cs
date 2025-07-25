@@ -7,8 +7,7 @@ using Serilog.Events;
 
 namespace Odering.Infrastructure.Logging;
 
-internal class LoggingCommandHandlerWithResultDecorator<T, TResult> : ICommandHandler<T, TResult>
-    where T : ICommand<TResult>
+internal class LoggingCommandHandlerWithResultDecorator<T, TResult> : ICommandHandler<T, TResult> where T : ICommand<TResult>
 {
     private readonly ILogger _logger;
     private readonly IExecutionContextAccessor _executionContextAccessor;

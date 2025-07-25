@@ -1,4 +1,6 @@
-﻿using Ordering.Application;
+﻿using MediatR;
+using Odering.Infrastructure.Processing.Outbox;
+using Ordering.Application;
 using Ordering.Application.Configuration.CQRS.Commands;
 using Serilog;
 using Serilog.Context;
@@ -27,7 +29,11 @@ internal class LoggingCommandHandlerDecorator<T> : ICommandHandler<T> where T : 
 
     public async Task Handle(T command, CancellationToken cancellationToken)
     {
-        // TODO: Add logging logic if command is RecurringCommand
+        if (command is IRecurringCommand)
+        {
+            await _decorated.Handle(command, cancellationToken);
+            ;
+        }
 
         using (LogContext.Push(
             new RequestLogEnricher(_executionContextAccessor),

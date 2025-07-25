@@ -1,5 +1,6 @@
 ﻿using Ordering.Application.Configuration.CQRS.Commands;
 using Ordering.Application.Configuration.Data;
+using Ordering.Application.Configuration.Emails;
 using Ordering.Domain.Customers;
 using Ordering.Domain.Customers.Orders;
 using Ordering.Domain.ForeignExchange;

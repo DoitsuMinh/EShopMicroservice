@@ -1,5 +1,4 @@
-﻿using Npgsql;
-using Odering.Infrastructure.Processing;
+﻿using Odering.Infrastructure.Processing;
 using Ordering.Application.Customers.RegisterCustomer;
 using Ordering.Application.Orders;
 using Ordering.Application.Orders.GetCustomerOrderDetails;

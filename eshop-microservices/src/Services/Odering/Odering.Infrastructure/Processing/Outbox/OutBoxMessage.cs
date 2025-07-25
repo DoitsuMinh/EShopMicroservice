@@ -15,7 +15,7 @@ public class OutboxMessage
     public OutboxMessage(DateTime occurredOn, string type, string data)
     {
         Id = Guid.NewGuid();
-        OccurredOn = occurredOn;
+        OccurredOn = occurredOn.ToUniversalTime();
         Type = type;
         Data = data;
     }

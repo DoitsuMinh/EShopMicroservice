@@ -5,13 +5,19 @@ namespace Ordering.Application.Orders.PlaceCustomerOrders;
 
 public class OrderPlacedDomainEventHandler : INotificationHandler<OrderPlacedEvent>
 {
-    public OrderPlacedDomainEventHandler()
+    //private readonly IPaymentRepository _paymentRepository;
+
+    public OrderPlacedDomainEventHandler(
+        //IPaymentRepository paymentRepository
+        )
     {
-        
+        //_paymentRepository = paymentRepository;
     }
 
-    public Task Handle(OrderPlacedEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(OrderPlacedEvent notification, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("This is a placeholder for the actual email sending logic.");
+        //var newPayment = new Payment(notification.OrderId);
+
+        //await this._paymentRepository.AddAsync(newPayment);
     }
 }
