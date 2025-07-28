@@ -2,14 +2,15 @@
 using MediatR;
 using Odering.Infrastructure.Logging;
 using Odering.Infrastructure.Processing.InternalCommands;
+using Ordering.Application.Configuration.Commands;
 using Ordering.Application.Configuration.CQRS.Commands;
 using Ordering.Application.Configuration.DomainEvents;
-using Ordering.Application.Orders.PlaceCustomerOrders;
-using Ordering.Domain.Customers.Events;
+using Ordering.Application.Payments;
+using System.Reflection;
 
 namespace Odering.Infrastructure.Processing;
 
-public class ProcessingModule : Module
+public class ProcessingModule : Autofac.Module
 {
     /// <summary>
     /// Load the processing module into the Autofac container.
@@ -26,14 +27,8 @@ public class ProcessingModule : Module
             typeof(INotificationHandler<>));
 
 
-        // TODO: PaymentCreatedNotification
-        //
-        //
-
-        builder.RegisterType<OrderPlacedNotification>()
-               .As<IDomainEventNotification<OrderPlacedEvent>>()
-               .InstancePerLifetimeScope();
-
+        builder.RegisterAssemblyTypes(typeof(PaymentCreatedNotification).GetTypeInfo().Assembly)
+                .AsClosedTypesOf(typeof(IDomainEventNotification<>)).InstancePerDependency();
 
         builder.RegisterGenericDecorator(
             typeof(UnitOfWorkCommandHandlerDecorator<>),
@@ -47,9 +42,9 @@ public class ProcessingModule : Module
             .As<ICommandsDispatcher>()
             .InstancePerLifetimeScope();
 
-        // TODO: RegisterType CommandsScheduler
-        //
-        //
+        builder.RegisterType<CommandsScheduler>()
+            .As<ICommandScheduler>()
+            .InstancePerLifetimeScope();
 
         builder.RegisterGenericDecorator(
             typeof(LoggingCommandHandlerDecorator<>),

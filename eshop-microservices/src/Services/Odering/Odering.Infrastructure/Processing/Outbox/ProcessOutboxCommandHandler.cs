@@ -41,19 +41,28 @@ internal class ProcessOutboxCommandHandler : ICommandHandler<ProcessOutboxComman
         {
             foreach (var message in messagesList)
             {
-                Type type = Assemblies.Application.GetType(message.Type);
-                var request = JsonConvert.DeserializeObject(message.Data, type) as IDomainEventNotification;
-
-                using (LogContext.Push(new OutboxMessageContextEnricher(request)))
+                try
                 {
-                    await _mediator.Publish(request, cancellationToken);
+                    Type type = Assemblies.Application.GetType(message.Type);
+                    var request = JsonConvert.DeserializeObject(message.Data, type) as IDomainEventNotification;
 
-                    await connection.ExecuteAsync(sqlUpdateProcessDate, new
+                    using (LogContext.Push(new OutboxMessageContextEnricher(request)))
                     {
-                        ProcessedDate = DateTime.UtcNow,
-                        message.Id
-                    });
-                }                
+                        await _mediator.Publish(request, cancellationToken);
+
+                        await connection.ExecuteAsync(sqlUpdateProcessDate, new
+                        {
+                            ProcessedDate = DateTime.UtcNow,
+                            message.Id
+                        });
+                    }
+                }
+                catch(Exception ex)
+                {
+                    // Log the exception or handle it as needed
+                    throw new ApplicationException("An error occurred while processing outbox messages.", ex);
+                }
+                              
             }
         }
 
