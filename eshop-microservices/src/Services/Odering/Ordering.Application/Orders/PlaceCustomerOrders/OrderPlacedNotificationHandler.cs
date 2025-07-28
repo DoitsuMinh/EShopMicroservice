@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Dapper;
+using MediatR;
 using Ordering.Application.Configuration.Data;
 using Ordering.Application.Configuration.Emails;
 
@@ -21,16 +22,16 @@ public class OrderPlacedNotificationHandler : INotificationHandler<OrderPlacedNo
     {
         var connection = _sqlConnectionFactory.GetOpenConnection();
 
-        //const string sql = @"SELECT " +
-        //    $"\"ProductId\"" +
-        //    $"FROM orders.v_Customers" +
-        //    $"WHERE \"Id\" = @Id";
+        const string sql = $"SELECT " +
+            $"\"Email\"" +
+            $" FROM orders.v_Customers " +
+            $" WHERE \"Id\" = @Id";
 
-        //var customerEmail = await connection.QueryFirstAsync<string>(sql,
-        //    new
-        //    {
-        //        Id = request.CustomerId.Value
-        //    });
+        var customerEmail = await connection.QueryFirstAsync<string>(sql,
+            new
+            {
+                Id = request.CustomerId.Value
+            });
 
         var emailMessage = new EmailMessage(
             _emailsSettings.SenderEmail,
@@ -38,6 +39,6 @@ public class OrderPlacedNotificationHandler : INotificationHandler<OrderPlacedNo
             "TEST",
             "<p>TEST</p>");
 
-        await _emailSender.SendEmailAsync(emailMessage);
+        //await _emailSender.SendEmailAsync(emailMessage);
     }
 }

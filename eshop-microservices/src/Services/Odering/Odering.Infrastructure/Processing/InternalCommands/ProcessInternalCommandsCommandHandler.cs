@@ -16,29 +16,54 @@ internal class ProcessInternalCommandsCommandHandler : ICommandHandler<ProcessIn
 
     public async Task<Unit> Handle(ProcessInternalCommandsCommand command, CancellationToken cancellationToken)
     {
-        var connection = _sqlConnectionFactory.GetOpenConnection();
+        try
+        {
+            var connection = _sqlConnectionFactory.GetOpenConnection();
 
-        const string sql = @"
-                        SELECT ""Type"", ""Data""
+            const string sql = @"
+                        SELECT ""Id"", ""Type"", ""Data""
                         FROM app.internalcommands
                         WHERE ""ProcessedDate"" is NULL;";
-        var commands = await connection.QueryAsync<InternalCommandDto>(sql);
+            var commands = await connection.QueryAsync<InternalCommandDto>(sql);
 
-        var internalCommandsList = commands.ToList();
+            //const string sqlUpdateProcessDate = @"
+            //UPDATE app.internalcommands
+            //SET ""ProcessedDate"" = @ProcessedDate
+            //WHERE ""Id"" = @Id;";
 
-        foreach (var internalCommand in internalCommandsList)
+            var internalCommandsList = commands.ToList();
+
+            if (internalCommandsList.Count > 0)
+            {
+                foreach (var internalCommand in internalCommandsList)
+                {
+                    Type type = Assemblies.Application.GetType(internalCommand.Type);
+                    dynamic commandToProcess = JsonConvert.DeserializeObject(internalCommand.Data, type);
+
+                    await CommandsExecutor.Execute(commandToProcess);
+
+                    //await connection.ExecuteAsync(sqlUpdateProcessDate, new
+                    //{
+                    //    ProcessedDate = DateTime.UtcNow,
+                    //    internalCommand.Id
+                    //});
+                }
+            }
+            
+
+            return Unit.Value;
+        }
+        catch (Exception ex)
         {
-            Type type = Assemblies.Application.GetType(internalCommand.Type);
-            dynamic commandToProcess = JsonConvert.DeserializeObject(internalCommand.Data, type);
-
-            await CommandsExecutor.Execute(commandToProcess);
+            // Log the exception or handle it as needed
+            throw new ApplicationException("An error occurred while processing internal commands.", ex);
         }
         
-        return Unit.Value;
     }
 
     private class InternalCommandDto
     {
+        public Guid Id { get; set; }
         public string Type { get; set; } = string.Empty;
         public string Data { get; set; } = string.Empty;
     }

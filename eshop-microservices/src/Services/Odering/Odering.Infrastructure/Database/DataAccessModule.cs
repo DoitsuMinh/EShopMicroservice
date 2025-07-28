@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Odering.Infrastructure.Domain;
 using Odering.Infrastructure.Domain.Customers;
+using Odering.Infrastructure.Domain.Payments;
 using Odering.Infrastructure.Domain.Products;
 using Odering.Infrastructure.SeedWork;
 using Ordering.Application.Configuration.Data;
 using Ordering.Domain.Customers;
+using Ordering.Domain.Payments;
 using Ordering.Domain.Products;
 using Ordering.Domain.SeedWork;
 
@@ -53,6 +55,11 @@ public class DataAccessModule : Module
         // Register IProductRepository as a transient service, allowing it to be created per request.
         builder.RegisterType<ProductRepository>()
             .As<IProductRepository>()
+            .InstancePerLifetimeScope();
+
+        // Register IPaymentRepository as a transient service, allowing it to be created per request.
+        builder.RegisterType<PaymentRepository>()
+            .As<IPaymentRepository>()
             .InstancePerLifetimeScope();
 
         // Register the StronglyTypedIdValueConverterSelector to handle strongly-typed IDs in EF Core.

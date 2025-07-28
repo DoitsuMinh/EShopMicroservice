@@ -21,8 +21,9 @@ public class OrderTests : TestBase
 
         var products = new List<ProductDto>();
         var productId = Guid.Parse("9db6e474-ae74-4cf5-a0dc-ba23a42e2566");
+        var productName = "T-Shirt";
 
-        products.Add(new ProductDto(productId, TEST_QTY));
+        products.Add(new ProductDto(productId, TEST_QTY, productName));
         var orderId = await CommandsExecutor.Execute(
             new PlaceCustomerOrderCommand(customer.Id, products, AUD_CURRENCY));
 

@@ -3,6 +3,7 @@ using Odering.Infrastructure.Processing.InternalCommands;
 using Odering.Infrastructure.Processing.Outbox;
 using Ordering.Domain.Customers;
 using Ordering.Domain.Customers.Orders;
+using Ordering.Domain.Payments;
 using Ordering.Domain.Products;
 
 namespace Odering.Infrastructure.Database;
@@ -17,6 +18,7 @@ public class OrdersContext: DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Customer> Customers { get; set; }
+    public DbSet<Payment> Payments { get; set; }
     public DbSet<InternalCommand> InternalCommands { get; set; }
     public DbSet<OutboxMessage> OutboxMessages { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)

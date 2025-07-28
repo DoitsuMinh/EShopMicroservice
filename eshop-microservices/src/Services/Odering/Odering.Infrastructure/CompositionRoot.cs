@@ -10,7 +10,7 @@ public class CompositionRoot
 
     internal static void SetContainer(IContainer container)
     {
-        _container = container;
+        _container = container ?? throw new ArgumentNullException(nameof(container), "Container cannot be null");
     }
 
     internal static ILifetimeScope BeginLifeTimeScope()

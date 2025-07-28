@@ -38,9 +38,7 @@ public class MediatorModule : Autofac.Module
         {
             builder
                 .RegisterAssemblyTypes(
-                    Assemblies.Application, 
-                    typeof(RegisterCustomerCommand).Assembly,
-                    typeof(PlaceCustomerOrderCommand).Assembly,
+                    Assemblies.Application,
                     ThisAssembly)
                 .AsClosedTypesOf(mediatrOpenType)
                 .FindConstructorsWith(new AllConstructorFinder())
