@@ -39,5 +39,6 @@ public class UnitOfWorkCommandHandlerDecorator<T> : ICommandHandler<T> where T :
         }
 
         await _unitOfWork.CommitAsync(cancellationToken);
-    }    
+        //return Unit.Value;
+    }
 }
