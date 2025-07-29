@@ -61,52 +61,60 @@ public class ApplicationStartup
         ILogger logger, 
         IExecutionContextAccessor executionContextAccessor)
     {
-        var schedulerFactory = new StdSchedulerFactory();
-        var scheduler = schedulerFactory.GetScheduler().GetAwaiter().GetResult();
-
-        var container = new ContainerBuilder();
-
-        container.RegisterModule(new LoggingModule(logger));
-        container.RegisterModule(new QuartzModule());
-        container.RegisterModule(new DataAccessModule(connectionString));
-        container.RegisterModule(new EmailModule(emailsSetting));
-        container.RegisterModule(new ProcessingModule());
-        container.RegisterModule(new MediatorModule());
-
-
-        container.RegisterInstance(executionContextAccessor);
-        container.Register(c =>
+        try
         {
-            var dbContextOptionsBuilder = new DbContextOptionsBuilder<OrdersContext>();
-            dbContextOptionsBuilder.UseNpgsql(connectionString);
+            var schedulerFactory = new StdSchedulerFactory();
+            var scheduler = schedulerFactory.GetScheduler().GetAwaiter().GetResult();
 
-            dbContextOptionsBuilder.ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector>();
-            return new OrdersContext(dbContextOptionsBuilder.Options);
-        }).AsSelf().InstancePerLifetimeScope();
+            var container = new ContainerBuilder();
 
-        scheduler.JobFactory = new JobFactory(container.Build());
+            container.RegisterModule(new LoggingModule(logger));
+            container.RegisterModule(new QuartzModule());
+            container.RegisterModule(new DataAccessModule(connectionString));
+            container.RegisterModule(new EmailModule(emailsSetting));
+            container.RegisterModule(new ProcessingModule());
+            container.RegisterModule(new MediatorModule());
 
-        scheduler.Start().GetAwaiter().GetResult();
 
-        var processOutboxJob = JobBuilder.Create<ProcessOutboxJob>().Build();
-        var trigger = 
-            TriggerBuilder
-                .Create()
-                .StartNow()
-                .WithCronSchedule("0/15 * * ? * *")
-                .Build();
+            container.RegisterInstance(executionContextAccessor);
+            container.Register(c =>
+            {
+                var dbContextOptionsBuilder = new DbContextOptionsBuilder<OrdersContext>();
+                dbContextOptionsBuilder.UseNpgsql(connectionString);
 
-        scheduler.ScheduleJob(processOutboxJob, trigger).GetAwaiter().GetResult();
+                dbContextOptionsBuilder.ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector>();
+                return new OrdersContext(dbContextOptionsBuilder.Options);
+            }).AsSelf().InstancePerLifetimeScope();
 
-        var processInternalCommandsJob = JobBuilder.Create<ProcessInternalCommandsJob>().Build();
-        var triggerCommandsProcessing =
-            TriggerBuilder
-                .Create()
-                .StartNow()
-                .WithCronSchedule("0/15 * * ? * *")
-                .Build();
+            scheduler.JobFactory = new JobFactory(container.Build());
 
-        scheduler.ScheduleJob(processInternalCommandsJob, triggerCommandsProcessing).GetAwaiter().GetResult();
+            scheduler.Start().GetAwaiter().GetResult();
+
+            var processOutboxJob = JobBuilder.Create<ProcessOutboxJob>().Build();
+            var trigger =
+                TriggerBuilder
+                    .Create()
+                    .StartNow()
+                    .WithCronSchedule("0/15 * * ? * *")
+                    .Build();
+
+            scheduler.ScheduleJob(processOutboxJob, trigger).GetAwaiter().GetResult();
+
+            var processInternalCommandsJob = JobBuilder.Create<ProcessInternalCommandsJob>().Build();
+            var triggerCommandsProcessing =
+                TriggerBuilder
+                    .Create()
+                    .StartNow()
+                    .WithCronSchedule("0/15 * * ? * *")
+                    .Build();
+
+            scheduler.ScheduleJob(processInternalCommandsJob, triggerCommandsProcessing).GetAwaiter().GetResult();
+        } catch (Exception e)
+        {
+            logger.Error(e, "Error during application startup");
+            throw;
+        }
+       
     }
 
     private static IServiceProvider CreateAutofacServiceProvider(
@@ -117,48 +125,56 @@ public class ApplicationStartup
         ILogger logger,
         IExecutionContextAccessor executionContextAccessor)
     {
-        // Create a new Autofac container builder
-        var container = new ContainerBuilder();
-
-        // Populate the container with services from the IServiceCollection
-        container.Populate(services);
-
-        // Register modules to the container
-        container.RegisterModule(new LoggingModule(logger));
-        container.RegisterModule(new DataAccessModule(connectionString));
-
-        // Email module registration
-        if (emailSender != null)
+        try
         {
-            container.RegisterModule(new EmailModule(emailSender, emailsSettings));
-        }
-        else
+            // Create a new Autofac container builder
+            var container = new ContainerBuilder();
+
+            // Populate the container with services from the IServiceCollection
+            container.Populate(services);
+
+            // Register modules to the container
+            container.RegisterModule(new LoggingModule(logger));
+            container.RegisterModule(new DataAccessModule(connectionString));
+
+            // Email module registration
+            if (emailSender != null)
+            {
+                container.RegisterModule(new EmailModule(emailSender, emailsSettings));
+            }
+            else
+            {
+                container.RegisterModule(new EmailModule(emailsSettings));
+            }
+
+            container.RegisterModule(new ProcessingModule());
+            container.RegisterModule(new MediatorModule());
+            container.RegisterModule(new DomainModule());
+
+
+
+            // Register the execution context accessor as a singleton instance
+            container.RegisterInstance(executionContextAccessor);
+
+            // Build the Autofac container
+            var buildContainer = container.Build();
+
+            // Set the service locator provider to use Autofac
+            ServiceLocator.SetLocatorProvider(() => new AutofacServiceLocator(buildContainer));
+
+            // Create an Autofac service provider from the built container
+            var serviceProvider = new AutofacServiceProvider(buildContainer);
+
+            // Set the built container as the composition root for the application
+            CompositionRoot.SetContainer(buildContainer);
+
+            // Return the configured service provider
+            return serviceProvider;
+        } catch (Exception ex)
         {
-            container.RegisterModule(new EmailModule(emailsSettings));
+            logger.Error(ex, "Error during application startup");
+            throw;
         }
-
-        container.RegisterModule(new ProcessingModule());
-        container.RegisterModule(new MediatorModule());
-        container.RegisterModule(new DomainModule());
-
-
-
-        // Register the execution context accessor as a singleton instance
-        container.RegisterInstance(executionContextAccessor);
-
-        // Build the Autofac container
-        var buildContainer = container.Build();
-
-        // Set the service locator provider to use Autofac
-        ServiceLocator.SetLocatorProvider(() => new AutofacServiceLocator(buildContainer));
-
-        // Create an Autofac service provider from the built container
-        var serviceProvider = new AutofacServiceProvider(buildContainer);
-
-        // Set the built container as the composition root for the application
-        CompositionRoot.SetContainer(buildContainer);
-
-        // Return the configured service provider
-        return serviceProvider;
+       
     }
 }
