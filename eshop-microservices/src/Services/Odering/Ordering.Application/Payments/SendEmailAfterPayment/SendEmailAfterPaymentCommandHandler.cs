@@ -30,7 +30,7 @@ namespace Ordering.Application.Payments.SendEmailAfterPayment
 
             payment.MarkEmailNotificationAsSent();
 
-            await _uow.CommitAsync(cancellationToken);
+            //await _uow.CommitAsync(cancellationToken);
 
             return Unit.Value;
         }

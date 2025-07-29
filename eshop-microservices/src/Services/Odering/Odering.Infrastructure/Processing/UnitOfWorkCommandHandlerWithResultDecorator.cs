@@ -22,6 +22,9 @@ public class UnitOfWorkCommandHandlerWithResultDecorator<TCommand, TResult> : IC
 
     public async Task<TResult> Handle(TCommand command, CancellationToken cancellationToken)
     {
+        // write to console for debugging purposes
+        Console.WriteLine($"UnitOfWorkCommandHandlerWithResultDecorator triggered for: {command.GetType().Name}");
+
         var result = await _decorated.Handle(command, cancellationToken);
 
         if(command is InternalCommandBase<TResult>)

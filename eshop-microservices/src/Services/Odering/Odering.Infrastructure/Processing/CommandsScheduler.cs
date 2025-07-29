@@ -21,7 +21,7 @@ public class CommandsScheduler : ICommandScheduler
 
         var sql = @"
                 INSERT INTO app.internalcommands(""Id"", ""EnqueueDate"", ""Type"", ""Data"")
-                VALUES (@Id, @EnqueueDate, @Type, @Data); ";
+                VALUES (@Id, @EnqueueDate, @Type, @Data);";
 
         await connection.ExecuteAsync(sql, new
         {

@@ -38,18 +38,31 @@ internal class ProcessInternalCommandsCommandHandler : ICommandHandler<ProcessIn
                 foreach (var internalCommand in internalCommandsList)
                 {
                     Type type = Assemblies.Application.GetType(internalCommand.Type);
-                    dynamic commandToProcess = JsonConvert.DeserializeObject(internalCommand.Data, type);
+                    var commandToProcess = JsonConvert.DeserializeObject(internalCommand.Data, type);
 
-                    await CommandsExecutor.Execute(commandToProcess);
 
-                    //await connection.ExecuteAsync(sqlUpdateProcessDate, new
-                    //{
-                    //    ProcessedDate = DateTime.UtcNow,
-                    //    internalCommand.Id
-                    //});
+                    // ✅ FIX: Properly handle generic command execution
+                    if (commandToProcess is ICommand<Unit> commandWithUnitResult)
+                    {
+                        await CommandsExecutor.Execute(commandWithUnitResult);
+                    }
+                    else if (commandToProcess is ICommand commandWithoutResult)
+                    {
+                        await CommandsExecutor.Execute(commandWithoutResult);
+                    }
+                    else
+                    {
+                        // Handle other ICommand<TResult> types using reflection
+                        var executeMethod = typeof(CommandsExecutor).GetMethod("Execute", new[] { commandToProcess.GetType() });
+                        if (executeMethod != null)
+                        {
+                            var task = (Task)executeMethod.Invoke(null, new[] { commandToProcess });
+                            await task;
+                        }
+                    }
                 }
             }
-            
+
 
             return Unit.Value;
         }
@@ -58,7 +71,7 @@ internal class ProcessInternalCommandsCommandHandler : ICommandHandler<ProcessIn
             // Log the exception or handle it as needed
             throw new ApplicationException("An error occurred while processing internal commands.", ex);
         }
-        
+
     }
 
     private class InternalCommandDto
