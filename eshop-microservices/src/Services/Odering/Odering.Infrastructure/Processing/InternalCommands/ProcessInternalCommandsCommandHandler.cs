@@ -9,6 +9,7 @@ namespace Odering.Infrastructure.Processing.InternalCommands;
 internal class ProcessInternalCommandsCommandHandler : ICommandHandler<ProcessInternalCommandsCommand, Unit>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
+    private readonly IMediator _mediator;
     public ProcessInternalCommandsCommandHandler(ISqlConnectionFactory sqlConnectionFactory)
     {
         _sqlConnectionFactory = sqlConnectionFactory;
@@ -38,31 +39,12 @@ internal class ProcessInternalCommandsCommandHandler : ICommandHandler<ProcessIn
                 foreach (var internalCommand in internalCommandsList)
                 {
                     Type type = Assemblies.Application.GetType(internalCommand.Type);
-                    var commandToProcess = JsonConvert.DeserializeObject(internalCommand.Data, type);
+                    dynamic commandToProcess = JsonConvert.DeserializeObject(internalCommand.Data, type);
 
-
-                    // ✅ FIX: Properly handle generic command execution
-                    if (commandToProcess is ICommand<Unit> commandWithUnitResult)
-                    {
-                        await CommandsExecutor.Execute(commandWithUnitResult);
-                    }
-                    else if (commandToProcess is ICommand commandWithoutResult)
-                    {
-                        await CommandsExecutor.Execute(commandWithoutResult);
-                    }
-                    else
-                    {
-                        // Handle other ICommand<TResult> types using reflection
-                        var executeMethod = typeof(CommandsExecutor).GetMethod("Execute", new[] { commandToProcess.GetType() });
-                        if (executeMethod != null)
-                        {
-                            var task = (Task)executeMethod.Invoke(null, new[] { commandToProcess });
-                            await task;
-                        }
-                    }
+                    await CommandsExecutor.Execute(commandToProcess);
+                    
                 }
             }
-
 
             return Unit.Value;
         }
