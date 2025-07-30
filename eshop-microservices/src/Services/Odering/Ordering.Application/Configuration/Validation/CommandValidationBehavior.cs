@@ -39,6 +39,6 @@ public class CommandValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
             throw new InvalidCommandException(errorBuilder.ToString(), string.Empty);
         }
 
-        return await next(cancellationToken);
+        return await next();
     }
 }

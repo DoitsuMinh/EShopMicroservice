@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Odering.Infrastructure.Processing.Outbox;
+﻿using Odering.Infrastructure.Processing.Outbox;
 using Ordering.Application;
 using Ordering.Application.Configuration.CQRS.Commands;
 using Serilog;
@@ -27,7 +26,6 @@ internal class LoggingCommandHandlerDecorator<T> : ICommandHandler<T> where T : 
 
     public async Task Handle(T command, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"LoggingCommandHandlerDecorator triggered for: {command.GetType().Name}");
         if (command is IRecurringCommand)
         {
             await _decorated.Handle(command, cancellationToken);

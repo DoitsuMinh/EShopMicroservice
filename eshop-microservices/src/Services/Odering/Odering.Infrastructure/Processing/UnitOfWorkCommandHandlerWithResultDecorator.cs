@@ -5,7 +5,8 @@ using Ordering.Domain.SeedWork;
 
 namespace Odering.Infrastructure.Processing;
 
-public class UnitOfWorkCommandHandlerWithResultDecorator<TCommand, TResult> : ICommandHandler<TCommand, TResult> where TCommand : ICommand<TResult>
+public class UnitOfWorkCommandHandlerWithResultDecorator<TCommand, TResult> : ICommandHandler<TCommand, TResult> 
+    where TCommand : ICommand<TResult>
 {
     private readonly ICommandHandler<TCommand, TResult> _decorated;
 
@@ -22,12 +23,9 @@ public class UnitOfWorkCommandHandlerWithResultDecorator<TCommand, TResult> : IC
 
     public async Task<TResult> Handle(TCommand command, CancellationToken cancellationToken)
     {
-        // write to console for debugging purposes
-        Console.WriteLine($"UnitOfWorkCommandHandlerWithResultDecorator triggered for: {command.GetType().Name}");
-
         var result = await _decorated.Handle(command, cancellationToken);
 
-        if(command is InternalCommandBase<TResult>)
+        if (command is InternalCommandBase<TResult>)
         {
             var internalCommand =
                 await _ordersContext.InternalCommands.FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken: cancellationToken);

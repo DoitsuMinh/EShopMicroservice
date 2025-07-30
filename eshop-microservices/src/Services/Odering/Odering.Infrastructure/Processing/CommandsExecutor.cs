@@ -20,6 +20,7 @@ public static class CommandsExecutor
         using (var scope = CompositionRoot.BeginLifeTimeScope())
         {
             var mediator = scope.Resolve<IMediator>();
+
             return await mediator.Send(command);
         }
     }
