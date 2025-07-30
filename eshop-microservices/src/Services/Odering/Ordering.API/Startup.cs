@@ -127,7 +127,7 @@ public class Startup
             .WriteTo.Console(
                 theme: AnsiConsoleTheme.Literate, 
                 outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{Context}] {Message:lj}{NewLine}{Exception}")
-            .WriteTo.File(new CompactJsonFormatter(), "logs/logs.txt")
+            .WriteTo.File(new CompactJsonFormatter(), $"logs/logs-{DateTime.UtcNow:yyyy-MM-dd}.txt")
             .CreateLogger();
     }
 }

@@ -2,21 +2,19 @@
 using Ordering.Application.Configuration.CQRS.Commands;
 using Ordering.Application.Configuration.Emails;
 using Ordering.Domain.Payments;
-using Ordering.Domain.SeedWork;
 
 namespace Ordering.Application.Payments.SendEmailAfterPayment
 {
-    public class SendEmailAfterPaymentCommandHandler : ICommandHandler<SendEmailAfterPaymentCommand, Unit>
+    public class SendEmailAfterPaymentCommandHandler : ICommandHandler<SendEmailAfterPaymentCommand, Unit> 
     {
         private readonly IEmailSender _emailSender;
         private readonly IPaymentRepository _paymentRepository;
-        private readonly IUnitOfWork _uow;
+        //private readonly IUnitOfWork _uow;
 
-        public SendEmailAfterPaymentCommandHandler(IEmailSender emailSender, IPaymentRepository paymentRepository, IUnitOfWork uow)
+        public SendEmailAfterPaymentCommandHandler(IEmailSender emailSender, IPaymentRepository paymentRepository)
         {
             _emailSender = emailSender ?? throw new ArgumentNullException(nameof(emailSender));
             _paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
-            _uow = uow ?? throw new ArgumentNullException(nameof(uow));
         }
 
         public async Task<Unit> Handle(SendEmailAfterPaymentCommand request, CancellationToken cancellationToken)

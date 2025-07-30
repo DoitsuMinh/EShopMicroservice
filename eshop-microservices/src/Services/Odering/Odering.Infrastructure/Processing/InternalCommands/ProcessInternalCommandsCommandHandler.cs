@@ -3,13 +3,13 @@ using MediatR;
 using Newtonsoft.Json;
 using Ordering.Application.Configuration.CQRS.Commands;
 using Ordering.Application.Configuration.Data;
+using System.Reflection;
 
 namespace Odering.Infrastructure.Processing.InternalCommands;
 
 internal class ProcessInternalCommandsCommandHandler : ICommandHandler<ProcessInternalCommandsCommand, Unit>
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
-    private readonly IMediator _mediator;
     public ProcessInternalCommandsCommandHandler(ISqlConnectionFactory sqlConnectionFactory)
     {
         _sqlConnectionFactory = sqlConnectionFactory;
@@ -27,11 +27,6 @@ internal class ProcessInternalCommandsCommandHandler : ICommandHandler<ProcessIn
                         WHERE ""ProcessedDate"" is NULL;";
             var commands = await connection.QueryAsync<InternalCommandDto>(sql);
 
-            //const string sqlUpdateProcessDate = @"
-            //UPDATE app.internalcommands
-            //SET ""ProcessedDate"" = @ProcessedDate
-            //WHERE ""Id"" = @Id;";
-
             var internalCommandsList = commands.ToList();
 
             if (internalCommandsList.Count > 0)
@@ -42,7 +37,6 @@ internal class ProcessInternalCommandsCommandHandler : ICommandHandler<ProcessIn
                     dynamic commandToProcess = JsonConvert.DeserializeObject(internalCommand.Data, type);
 
                     await CommandsExecutor.Execute(commandToProcess);
-                    
                 }
             }
 

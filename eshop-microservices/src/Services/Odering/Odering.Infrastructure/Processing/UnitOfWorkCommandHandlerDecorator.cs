@@ -25,7 +25,6 @@ public class UnitOfWorkCommandHandlerDecorator<T> : ICommandHandler<T> where T :
 
     public async Task Handle(T command, CancellationToken cancellationToken)
     {
-        Console.WriteLine("UnitOfWorkCommandHandlerDecorator executed command " + nameof(command));
         await _decorated.Handle(command, cancellationToken);
 
         if (command is InternalCommandBase)

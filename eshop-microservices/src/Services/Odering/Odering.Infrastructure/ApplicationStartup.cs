@@ -39,6 +39,7 @@ public class ApplicationStartup
             StartQuartz(connectionString, emailsSetting, logger, executionContextAccessor);
         }
 
+
         // Register the cache store as a singleton service in the DI container
         services.AddSingleton(cacheStore);
 
@@ -72,8 +73,8 @@ public class ApplicationStartup
             container.RegisterModule(new QuartzModule());
             container.RegisterModule(new DataAccessModule(connectionString));
             container.RegisterModule(new EmailModule(emailsSetting));
-            container.RegisterModule(new ProcessingModule());
             container.RegisterModule(new MediatorModule());
+            container.RegisterModule(new ProcessingModule());
 
 
             container.RegisterInstance(executionContextAccessor);
@@ -114,7 +115,6 @@ public class ApplicationStartup
             logger.Error(e, "Error during application startup");
             throw;
         }
-       
     }
 
     private static IServiceProvider CreateAutofacServiceProvider(
@@ -136,6 +136,8 @@ public class ApplicationStartup
             // Register modules to the container
             container.RegisterModule(new LoggingModule(logger));
             container.RegisterModule(new DataAccessModule(connectionString));
+            container.RegisterModule(new MediatorModule());
+            container.RegisterModule(new DomainModule());
 
             // Email module registration
             if (emailSender != null)
@@ -148,10 +150,6 @@ public class ApplicationStartup
             }
 
             container.RegisterModule(new ProcessingModule());
-            container.RegisterModule(new MediatorModule());
-            container.RegisterModule(new DomainModule());
-
-
 
             // Register the execution context accessor as a singleton instance
             container.RegisterInstance(executionContextAccessor);

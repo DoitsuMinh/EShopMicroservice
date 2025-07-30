@@ -26,7 +26,6 @@ internal class LoggingCommandHandlerWithResultDecorator<T, TResult> : ICommandHa
 
     public async Task<TResult> Handle(T command, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"LoggingCommandHandlerWithResultDecorator triggered for: {command.GetType().Name}");
         if (command is IRecurringCommand)
         {
             return await _decorated.Handle(command, cancellationToken);

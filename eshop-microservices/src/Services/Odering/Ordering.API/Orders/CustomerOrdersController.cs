@@ -58,8 +58,17 @@ public class CustomerOrdersController : Controller
         [FromRoute] Guid customerId,
         [FromBody] CustomerOrderRequest request)
     {
-        var id = await _mediator.Send(new PlaceCustomerOrderCommand(customerId, request.Products, request.Currency));
+        try
+        {
+            var id = await _mediator.Send(new PlaceCustomerOrderCommand(customerId, request.Products, request.Currency));
+            return Created(string.Empty, id);
 
-        return Created(string.Empty, id);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception or handle it as needed
+            return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+
+        }
     }
 }

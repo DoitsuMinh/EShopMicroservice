@@ -31,6 +31,7 @@ public class MediatorModule : Autofac.Module
             typeof(IValidator<>),
         };
 
+
         foreach (var mediatrOpenType in mediatrOpenTypes)
         {
             builder
@@ -47,10 +48,6 @@ public class MediatorModule : Autofac.Module
 
 
         builder.RegisterGeneric(typeof(CommandValidationBehavior<,>)).As(typeof(IPipelineBehavior<,>));
-
-        //var services = new ServiceCollection();
-
-        //builder.Populate(services);
     }
 
     private class ScopedContravariantRegistrationSource : IRegistrationSource
