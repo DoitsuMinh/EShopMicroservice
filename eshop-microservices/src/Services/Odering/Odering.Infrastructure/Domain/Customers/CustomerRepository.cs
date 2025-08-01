@@ -2,7 +2,7 @@
 using Odering.Infrastructure.Database;
 using Odering.Infrastructure.SeedWork;
 using Ordering.Domain.Customers;
-using Ordering.Domain.SeedWork;
+using Ordering.Domain.Customers.Exceptions;
 
 namespace Odering.Infrastructure.Domain.Customers;
 
@@ -29,7 +29,7 @@ public class CustomerRepository : ICustomerRepository
             .IncludePaths(
                 CustomerEntityTypeConfiguration.OrderList, 
                 CustomerEntityTypeConfiguration.OrderProducts)
-            .SingleAsync(c => c.Id == id) ?? throw new EntityNotFoundException(nameof(Customer), id.Value);
+            .SingleAsync(c => c.Id == id) ?? throw new CustomerNotFoundException(id.Value);
         }
         catch (Exception ex)
         {

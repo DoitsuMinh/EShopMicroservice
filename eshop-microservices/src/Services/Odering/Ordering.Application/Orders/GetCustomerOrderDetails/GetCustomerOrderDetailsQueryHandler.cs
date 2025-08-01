@@ -32,7 +32,7 @@ public class GetCustomerOrderDetailsQueryHandler : IQueryHandler<GetCustomerOrde
             @"SELECT 
                 ""ProductId"" AS Id, 
                 ""Quantity"", 
-                ""Name""
+                ""Name"",
                 ""Value"", 
                 ""Currency""
     	    FROM orders.v_orderproducts as op

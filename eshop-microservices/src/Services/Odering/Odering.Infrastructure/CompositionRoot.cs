@@ -3,7 +3,7 @@ using Autofac;
 
 namespace Odering.Infrastructure;
 
-public class CompositionRoot
+public static class CompositionRoot
 {
     private static IContainer _container;
 

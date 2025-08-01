@@ -6,6 +6,7 @@ using Ordering.API.SeedWork;
 using Ordering.Application;
 using Ordering.Application.Configuration.Emails;
 using Ordering.Application.Configuration.Validation;
+using Ordering.Domain.Customers.Exceptions;
 using Ordering.Domain.SeedWork;
 using Ordering.Infrastructure.Caching;
 using Serilog;
@@ -55,7 +56,8 @@ public class Startup
             {
                 x.Map<InvalidCommandException>(ex => new InvalidCommandProblemDetails(ex));
                 x.Map<BusinessRuleValidationException>(ex => new BusinessRuleValidationExceptionProblemDetails(ex));
-                x.Map<EntityNotFoundException>(ex => new EntityNotFoundProblemDetails(ex));
+                x.Map<CustomerNotFoundException>(ex => new EntityNotFoundProblemDetails(ex));
+                x.Map<ProductOrderNotFoundException>(ex => new EntityNotFoundProblemDetails(ex));
             });
 
             services.AddHttpContextAccessor();

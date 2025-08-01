@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Ordering.Application.Orders.ChangeCustomerOrder;
 using Ordering.Application.Orders.GetCustomerOrderDetails;
 using Ordering.Application.Orders.GetCustomerOrders;
 using Ordering.Application.Orders.PlaceCustomerOrders;
@@ -38,7 +39,7 @@ public class CustomerOrdersController : Controller
     /// <summary>
     /// Retrieves the details of a specific order for a customer by order ID.
     /// </summary>
-    [Route("{customerId}/orders/{orderId:guid}")]
+    [Route("{customerId:guid}/orders/{orderId:guid}")]
     [HttpGet]
     [ProducesResponseType(typeof(OrderDetailsDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<OrderDetailsDto>> GetCustomerOrderDetails(
@@ -58,17 +59,19 @@ public class CustomerOrdersController : Controller
         [FromRoute] Guid customerId,
         [FromBody] CustomerOrderRequest request)
     {
-        try
-        {
-            var id = await _mediator.Send(new PlaceCustomerOrderCommand(customerId, request.Products, request.Currency));
-            return Created(string.Empty, id);
+        var id = await _mediator.Send(new PlaceCustomerOrderCommand(customerId, request.Products, request.Currency));
+        return Created(string.Empty, id);
+    }
 
-        }
-        catch (Exception ex)
-        {
-            // Log the exception or handle it as needed
-            return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
-
-        }
+    [Route("{customerId:guid}/orders/{orderId:guid}")]
+    [HttpPut]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    public async Task<IActionResult> ChangeCustomerOrder(
+        [FromRoute] Guid customerId,
+        [FromRoute] Guid orderId,
+        [FromBody] CustomerOrderRequest request)
+    {
+        await _mediator.Send(new ChangeCustomerOrderCommand(customerId, orderId, request.Products, request.Currency));
+        return Ok();
     }
 }
