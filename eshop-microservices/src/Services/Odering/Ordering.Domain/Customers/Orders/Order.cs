@@ -1,4 +1,6 @@
-﻿using Ordering.Domain.ForeignExchange;
+﻿using Ordering.Domain.Customers.Exceptions;
+using Ordering.Domain.Customers.Rules;
+using Ordering.Domain.ForeignExchange;
 using Ordering.Domain.Products;
 using Ordering.Domain.SeedWork;
 using Ordering.Domain.Shared;
@@ -110,11 +112,14 @@ public class Order: Entity
         foreach (var orderProductData in orderProductsData)
         {
             // Find the product price matching the product ID and currency  
-            var product = allProductPrices.Single(x => x.ProductId == orderProductData.ProductId &&
-                                                       x.Price.Currency == currency);
+            var product = allProductPrices.SingleOrDefault(x => x.ProductId == orderProductData.ProductId &&
+                                                       x.Price.Currency == currency)
+                ?? throw new ProductOrderNotFoundException(orderProductData.ProductId.Value);
 
             // Check if the product already exists in the current order  
-            var existingProductOrder = _orderProducts.SingleOrDefault(x => x.ProductId == orderProductData.ProductId);
+            var existingProductOrder = _orderProducts.SingleOrDefault(x => x.ProductId == orderProductData.ProductId)
+                    ?? throw new ProductOrderNotFoundException(orderProductData.ProductId.Value);
+
             if (existingProductOrder != null)
             {
                 // If the product exists, update its quantity and recalculate its value  
@@ -122,7 +127,7 @@ public class Order: Entity
                 existingOrderProduct.ChangeQuantity(product, orderProductData.Quantity, conversionRates);
             }
             else
-            {
+            {                
                 // If the product does not exist, create a new order product and add it to the order  
                 var orderProduct = OrderProduct.CreateForProduct(product, orderProductData.Quantity, currency, conversionRates);
                 _orderProducts.Add(orderProduct);
