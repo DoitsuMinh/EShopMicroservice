@@ -54,7 +54,7 @@ public class Customer : Entity, IAggregateRoot
     {
         CheckRule(new OrderMustHaveAtLeastOneProductRule(orderProductsData));
         CheckRule(new OrderCannotHaveDuplicateProductRule(orderProductsData));
-        //CheckRule(new CustomerCannotOrderMoreThan2OrdersOnTheSameDayRule(_orders));
+        CheckRule(new CustomerCannotOrderMoreThan2OrdersOnTheSameDayRule(_orders));
 
         var order = Order.CreateNew(orderProductsData, allProductPrices, currency, conversionRates);
         
@@ -84,14 +84,8 @@ public class Customer : Entity, IAggregateRoot
     public void RemoveOrder(OrderId orderId)
     {
         var order = _orders.Single(o => o.Id == orderId);
-        if (order != null)
-        {
-            _orders.Remove(order);
-            AddDomainEvent(new OrderRemovedEvent(orderId));
-        }
-        else
-        {
-            throw new OrderNotFoundException($"Order {orderId} does not exist.");
-        }
+        
+        order.Remove();
+        AddDomainEvent(new OrderRemovedEvent(orderId));        
     }
 }

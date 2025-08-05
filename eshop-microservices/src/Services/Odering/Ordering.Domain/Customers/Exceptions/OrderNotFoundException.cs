@@ -1,13 +1,11 @@
-﻿namespace Ordering.Domain.Customers.Exceptions;
+﻿using Ordering.Domain.SeedWork;
 
-public class OrderNotFoundException : Exception
+namespace Ordering.Domain.Customers.Exceptions;
+
+public class OrderNotFoundException : NotFoundException
 {
-    public OrderNotFoundException(string message)
-        : base(message)
-    {
-    }
     public OrderNotFoundException(object key)
-        : base($"Order {key.ToString()} was not found.")
+        : base("Order", key)
     {
     }
 }

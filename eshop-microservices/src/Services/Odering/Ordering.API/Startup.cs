@@ -1,4 +1,6 @@
-﻿using Hellang.Middleware.ProblemDetails;
+﻿using HealthChecks.UI.Client;
+using Hellang.Middleware.ProblemDetails;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Caching.Memory;
 using Odering.Infrastructure;
 using Ordering.API.Configuration;
@@ -52,12 +54,13 @@ public class Startup
 
             services.AddSwaggerDocumentation();
 
+            services.AddHealthChecks().AddNpgSql(_configuration[ConnectionStrings]);
+
             services.AddProblemDetails(x =>
             {
                 x.Map<InvalidCommandException>(ex => new InvalidCommandProblemDetails(ex));
                 x.Map<BusinessRuleValidationException>(ex => new BusinessRuleValidationExceptionProblemDetails(ex));
-                x.Map<CustomerNotFoundException>(ex => new EntityNotFoundProblemDetails(ex));
-                x.Map<ProductOrderNotFoundException>(ex => new EntityNotFoundProblemDetails(ex));
+                x.Map<NotFoundException>(ex => new EntityNotFoundProblemDetails(ex));
             });
 
             services.AddHttpContextAccessor();
@@ -108,6 +111,12 @@ public class Startup
         {
             //app.UseProblemDetails();
         }
+
+        app.UseHealthChecks("/health", 
+            new HealthCheckOptions
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+            });
 
         app.UseRouting();
 
