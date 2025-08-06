@@ -1,14 +1,10 @@
 ﻿using Autofac;
 using Autofac.Core;
-using Autofac.Extensions.DependencyInjection;
 using Autofac.Features.Variance;
 using FluentValidation;
 using MediatR;
 using MediatR.Pipeline;
 using Ordering.Application.Configuration.Validation;
-using Ordering.Application.Customers.GetCustomerDetails;
-using Ordering.Application.Customers.RegisterCustomer;
-using Ordering.Application.Orders.PlaceCustomerOrders;
 using System.Reflection;
 
 namespace Odering.Infrastructure.Processing;
@@ -30,17 +26,17 @@ public class MediatorModule : Autofac.Module
             typeof(IRequestHandler<,>),
             typeof(IRequestExceptionHandler<,,>),
             typeof(IRequestExceptionAction<,>),
+            
             typeof(INotificationHandler<>),
             typeof(IValidator<>),
         };
+
 
         foreach (var mediatrOpenType in mediatrOpenTypes)
         {
             builder
                 .RegisterAssemblyTypes(
-                    Assemblies.Application, 
-                    typeof(RegisterCustomerCommand).Assembly,
-                    typeof(PlaceCustomerOrderCommand).Assembly,
+                    Assemblies.Application,
                     ThisAssembly)
                 .AsClosedTypesOf(mediatrOpenType)
                 .FindConstructorsWith(new AllConstructorFinder())
@@ -52,10 +48,6 @@ public class MediatorModule : Autofac.Module
 
 
         builder.RegisterGeneric(typeof(CommandValidationBehavior<,>)).As(typeof(IPipelineBehavior<,>));
-
-        var services = new ServiceCollection();
-
-        builder.Populate(services);
     }
 
     private class ScopedContravariantRegistrationSource : IRegistrationSource
@@ -78,7 +70,9 @@ public class MediatorModule : Autofac.Module
 
         public bool IsAdapterForIndividualComponents => _source.IsAdapterForIndividualComponents;
 
-        public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<ServiceRegistration>> registrationAccessor)
+        public IEnumerable<IComponentRegistration> RegistrationsFor(
+            Service service, 
+            Func<Service, IEnumerable<ServiceRegistration>> registrationAccessor)
         {
             var components = _source.RegistrationsFor(service, registrationAccessor);
 

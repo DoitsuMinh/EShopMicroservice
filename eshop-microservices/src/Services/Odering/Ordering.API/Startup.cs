@@ -1,10 +1,14 @@
-﻿using Hellang.Middleware.ProblemDetails;
+﻿using HealthChecks.UI.Client;
+using Hellang.Middleware.ProblemDetails;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Caching.Memory;
 using Odering.Infrastructure;
 using Ordering.API.Configuration;
 using Ordering.API.SeedWork;
 using Ordering.Application;
+using Ordering.Application.Configuration.Emails;
 using Ordering.Application.Configuration.Validation;
+using Ordering.Domain.Customers.Exceptions;
 using Ordering.Domain.SeedWork;
 using Ordering.Infrastructure.Caching;
 using Serilog;
@@ -46,13 +50,17 @@ public class Startup
 
             services.AddMemoryCache();
 
+            services.AddHttpClient();
+
             services.AddSwaggerDocumentation();
+
+            services.AddHealthChecks().AddNpgSql(_configuration[ConnectionStrings]);
 
             services.AddProblemDetails(x =>
             {
                 x.Map<InvalidCommandException>(ex => new InvalidCommandProblemDetails(ex));
                 x.Map<BusinessRuleValidationException>(ex => new BusinessRuleValidationExceptionProblemDetails(ex));
-                x.Map<EntityNotFoundException>(ex => new EntityNotFoundProblemDetails(ex));
+                x.Map<NotFoundException>(ex => new EntityNotFoundProblemDetails(ex));
             });
 
             services.AddHttpContextAccessor();
@@ -63,10 +71,9 @@ public class Startup
 
             var children = _configuration.GetSection("Caching").GetChildren();
             var cachingConfiguration = children.ToDictionary(child => child.Key, child => TimeSpan.Parse(child.Value));
-            // TODO: Email configuration
-            //
-            //
+            var emailsSettings = _configuration.GetSection("EmailsSettings").Get<EmailsSettings>();
             var memoryCache = serviceProvider.GetService<IMemoryCache>();
+            var emailSender = serviceProvider.GetService<IEmailSender>();
 
             var result = ApplicationStartup.Initialize(
                 services,
@@ -74,6 +81,8 @@ public class Startup
                     $"Connection string '{ConnectionStrings}' is not configured."
                     ),
                 cacheStore: new MemoryCacheStore(memoryCache, cachingConfiguration),
+                emailSender,
+                emailsSettings,
                 logger: _logger,
                 executionContextAccessor: executionContextAccessor
                 );
@@ -103,6 +112,12 @@ public class Startup
             //app.UseProblemDetails();
         }
 
+        app.UseHealthChecks("/health", 
+            new HealthCheckOptions
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+            });
+
         app.UseRouting();
 
         app.UseEndpoints(endpoints =>
@@ -123,7 +138,7 @@ public class Startup
             .WriteTo.Console(
                 theme: AnsiConsoleTheme.Literate, 
                 outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{Context}] {Message:lj}{NewLine}{Exception}")
-            .WriteTo.File(new CompactJsonFormatter(), "logs/logs.txt")
+            .WriteTo.File(new CompactJsonFormatter(), $"logs/logs-{DateTime.UtcNow:yyyy-MM-dd}.txt")
             .CreateLogger();
     }
 }

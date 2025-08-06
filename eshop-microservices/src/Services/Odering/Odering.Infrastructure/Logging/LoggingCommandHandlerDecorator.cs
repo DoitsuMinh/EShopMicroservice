@@ -1,4 +1,5 @@
-﻿using Ordering.Application;
+﻿using Odering.Infrastructure.Processing.Outbox;
+using Ordering.Application;
 using Ordering.Application.Configuration.CQRS.Commands;
 using Serilog;
 using Serilog.Context;
@@ -10,13 +11,11 @@ namespace Odering.Infrastructure.Logging;
 internal class LoggingCommandHandlerDecorator<T> : ICommandHandler<T> where T : ICommand
 {
     private readonly ICommandHandler<T> _decorated;
-
     private readonly IExecutionContextAccessor _executionContextAccessor;
-
     private readonly ILogger _logger;
 
     public LoggingCommandHandlerDecorator(
-        ICommandHandler<T> decorated, 
+        ICommandHandler<T> decorated,
         IExecutionContextAccessor executionContextAccessor,
         ILogger logger)
     {
@@ -27,7 +26,10 @@ internal class LoggingCommandHandlerDecorator<T> : ICommandHandler<T> where T : 
 
     public async Task Handle(T command, CancellationToken cancellationToken)
     {
-        // TODO: Add logging logic if command is RecurringCommand
+        if (command is IRecurringCommand)
+        {
+            await _decorated.Handle(command, cancellationToken);
+        }
 
         using (LogContext.Push(
             new RequestLogEnricher(_executionContextAccessor),
@@ -42,6 +44,8 @@ internal class LoggingCommandHandlerDecorator<T> : ICommandHandler<T> where T : 
                 await _decorated.Handle(command, cancellationToken);
 
                 _logger.Information($"Command {commandName} executed successfully");
+
+                //return result;
             }
             catch (Exception ex)
             {

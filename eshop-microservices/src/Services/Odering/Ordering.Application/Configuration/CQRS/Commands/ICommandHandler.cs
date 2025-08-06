@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿
+
+using MediatR;
 
 namespace Ordering.Application.Configuration.CQRS.Commands;
 

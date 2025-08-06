@@ -1,5 +1,6 @@
 ﻿using Ordering.Application.Configuration.CQRS.Commands;
 using Ordering.Application.Configuration.Data;
+using Ordering.Application.Configuration.Emails;
 using Ordering.Domain.Customers;
 using Ordering.Domain.Customers.Orders;
 using Ordering.Domain.ForeignExchange;
@@ -28,7 +29,7 @@ public class PlaceCustomerOrderCommandHandler : ICommandHandler<PlaceCustomerOrd
         
         var allProductPrices = await ProductPriceProvider.GetAllProductPricesAsync(_sqlConnectionFactory.GetOpenConnection());
 
-        var conversionRates = _foreignExchange.GetConversionRates();
+        var conversionRates = await _foreignExchange.GetConversionRatesAsync();
 
         var orderProductsData = command.Products.Select(x => new OrderProductData(new ProductId(x.Id), x.Quantity)).ToList();
 

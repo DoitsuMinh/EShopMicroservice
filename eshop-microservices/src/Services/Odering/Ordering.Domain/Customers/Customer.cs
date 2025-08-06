@@ -1,4 +1,5 @@
 ﻿using Ordering.Domain.Customers.Events;
+using Ordering.Domain.Customers.Exceptions;
 using Ordering.Domain.Customers.Orders;
 using Ordering.Domain.Customers.Rules;
 using Ordering.Domain.ForeignExchange;
@@ -52,7 +53,8 @@ public class Customer : Entity, IAggregateRoot
         List<ConversionRate> conversionRates)
     {
         CheckRule(new OrderMustHaveAtLeastOneProductRule(orderProductsData));
-        CheckRule(new CustomerCannotOrderMoreThan20OrdersOnTheSameDayRule(_orders));
+        CheckRule(new OrderCannotHaveDuplicateProductRule(orderProductsData));
+        CheckRule(new CustomerCannotOrderMoreThan2OrdersOnTheSameDayRule(_orders));
 
         var order = Order.CreateNew(orderProductsData, allProductPrices, currency, conversionRates);
         
@@ -71,6 +73,7 @@ public class Customer : Entity, IAggregateRoot
         string currency)
     {
         CheckRule(new OrderMustHaveAtLeastOneProductRule(newOrderProductsData));
+        CheckRule(new OrderCannotHaveDuplicateProductRule(newOrderProductsData));
 
         var order = _orders.Single(o => o.Id == orderId);
         order.Change(existingProducts, newOrderProductsData, conversionRates, currency);
@@ -81,10 +84,8 @@ public class Customer : Entity, IAggregateRoot
     public void RemoveOrder(OrderId orderId)
     {
         var order = _orders.Single(o => o.Id == orderId);
-        if (order != null)
-        {
-            _orders.Remove(order);
-            AddDomainEvent(new OrderRemovedEvent(orderId));
-        }
+        
+        order.Remove();
+        AddDomainEvent(new OrderRemovedEvent(orderId));        
     }
 }

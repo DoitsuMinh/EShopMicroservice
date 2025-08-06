@@ -2,11 +2,17 @@
 using MediatR;
 using Odering.Infrastructure.Logging;
 using Odering.Infrastructure.Processing.InternalCommands;
+using Ordering.Application.Configuration.Commands;
 using Ordering.Application.Configuration.CQRS.Commands;
+using Ordering.Application.Configuration.DomainEvents;
+using Ordering.Application.Payments;
+using Ordering.Application.Payments.SendEmailAfterPayment;
+using Ordering.Domain.Payments;
+using System.Reflection;
 
 namespace Odering.Infrastructure.Processing;
 
-public class ProcessingModule : Module
+public class ProcessingModule : Autofac.Module
 {
     /// <summary>
     /// Load the processing module into the Autofac container.
@@ -15,41 +21,39 @@ public class ProcessingModule : Module
     protected override void Load(ContainerBuilder builder)
     {
         builder.RegisterType<DomainEventsDispatcher>()
-            .As<IDomainEventsDispatcher>()
-            .InstancePerLifetimeScope();
+                .As<IDomainEventsDispatcher>()
+                .InstancePerLifetimeScope();
+
+        builder.RegisterAssemblyTypes(typeof(PaymentCreatedNotification).GetTypeInfo().Assembly)
+            .AsClosedTypesOf(typeof(IDomainEventNotification<>)).InstancePerDependency();
 
         builder.RegisterGenericDecorator(
             typeof(DomainEventsDispatcherNotificationHandlerDecorator<>),
             typeof(INotificationHandler<>));
 
-        // TODO: PaymentCreatedNotification
-        //
-        //
-
-        var serviice = new List<string>();
-
         builder.RegisterGenericDecorator(
             typeof(UnitOfWorkCommandHandlerDecorator<>),
-            typeof(ICommandHandler<>));
+            typeof(IRequestHandler<>));     // depends on autofac version, older versions may used ICommandHandler<>
 
         builder.RegisterGenericDecorator(
             typeof(UnitOfWorkCommandHandlerWithResultDecorator<,>),
-            typeof(ICommandHandler<,>));
+            typeof(IRequestHandler<,>)      // depends on autofac version, older versions may used ICommandHandler<,>
+            );
 
         builder.RegisterType<CommandsDispatcher>()
             .As<ICommandsDispatcher>()
             .InstancePerLifetimeScope();
 
-        // TODO: RegisterType CommandsScheduler
-        //
-        //
+        builder.RegisterType<CommandsScheduler>()
+            .As<ICommandScheduler>()
+            .InstancePerLifetimeScope();
 
         builder.RegisterGenericDecorator(
             typeof(LoggingCommandHandlerDecorator<>),
-            typeof(ICommandHandler<>));
+             typeof(IRequestHandler<>));    // depends on autofac version, older versions may used ICommandHandler<>
 
         builder.RegisterGenericDecorator(
             typeof(LoggingCommandHandlerWithResultDecorator<,>),
-            typeof(ICommandHandler<,>));
+            typeof(IRequestHandler<,>));    // depends on autofac version, older versions may used ICommandHandler<,>
     }
 }

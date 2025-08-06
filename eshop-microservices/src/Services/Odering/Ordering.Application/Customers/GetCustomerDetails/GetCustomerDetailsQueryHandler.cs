@@ -2,7 +2,7 @@
 using Npgsql;
 using Ordering.Application.Configuration.Data;
 using Ordering.Application.Configuration.Queries;
-using Ordering.Domain.SeedWork;
+using Ordering.Domain.Customers.Exceptions;
 
 namespace Ordering.Application.Customers.GetCustomerDetails;
 
@@ -30,6 +30,6 @@ public class GetCustomerDetailsQueryHandler : IQueryHandler<GetCustomerDetailsQu
 
         var customer = await connection.QuerySingleOrDefaultAsync<CustomerDetailsDto>(sql, new { request.CustomerId });
 
-        return customer ?? throw new EntityNotFoundException(nameof(CustomerDetailsDto), request.CustomerId);
+        return customer ?? throw new CustomerNotFoundException(request.CustomerId);
     }
 }

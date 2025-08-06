@@ -4,16 +4,17 @@ public class ProductDto
 {
     public Guid Id { get; set; }
     public int Quantity { get; set; }
-    public string Name { get; set; } = string.Empty; // Initialize with a default value
+    public string Name { get; set; }// Initialize with a default value
 
     public ProductDto()
     {
         
     }
 
-    public ProductDto(Guid id, int quantity)
+    public ProductDto(Guid id, int quantity, string name)
     {
         Id = id;
         Quantity = quantity;
+        Name = name;
     }
 }
