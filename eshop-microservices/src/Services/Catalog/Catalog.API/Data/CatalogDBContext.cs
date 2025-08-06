@@ -2,9 +2,9 @@
 
 namespace Catalog.API.Data;
 
-public class CatalogContext : DbContext
+public class CatalogDBContext : DbContext
 {
-    public CatalogContext(DbContextOptions<CatalogContext> options) : base(options)
+    public CatalogDBContext(DbContextOptions<CatalogDBContext> options) : base(options)
     {
     }
 

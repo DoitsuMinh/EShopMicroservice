@@ -4,7 +4,7 @@ public record GetProductByIdQuery(long Id) :IQuery<GetProductByIdResult>;
 
 public record GetProductByIdResult(Product Product);
 
-internal class GetProductByIdQueryHandler(CatalogContext context)
+internal class GetProductByIdQueryHandler(CatalogDBContext context)
     : IQueryHandler<GetProductByIdQuery, GetProductByIdResult>
 {
     public async Task<GetProductByIdResult> Handle(GetProductByIdQuery query, CancellationToken cancellationToken)

@@ -4,7 +4,7 @@ namespace Catalog.API.Data;
 
 public static class CatalogInitialData
 {
-    public static async Task SeedAsync(CatalogContext context)
+    public static async Task SeedAsync(CatalogDBContext context)
     {
         if (await context.Products.AnyAsync())
             return;
