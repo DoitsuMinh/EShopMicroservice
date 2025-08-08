@@ -17,7 +17,7 @@ builder.Services.AddValidatorsFromAssembly(assembly);
 
 builder.Services.AddCarter();
 
-builder.Services.AddDbContext<CatalogContext>(opts =>
+builder.Services.AddDbContext<CatalogDBContext>(opts =>
 {
     opts.UseSqlServer(builder.Configuration.GetConnectionString("Database")!);
 
@@ -53,9 +53,9 @@ if (app.Environment.IsDevelopment())
     // Create database and seed data without migrations
     using (var scope = app.Services.CreateScope())
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<CatalogContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-        await CatalogInitialData.SeedAsync(dbContext);
+        var dbContext = scope.ServiceProvider.GetRequiredService<CatalogDBContext>();
+        //await dbContext.Database.EnsureCreatedAsync();
+        //await CatalogInitialData.SeedAsync(dbContext);
     }
 }
 

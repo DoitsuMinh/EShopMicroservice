@@ -4,7 +4,7 @@ using BuildingBlocks.CQRS.Commands;
 namespace Catalog.API.Products.CreateProduct;
 
 public record CreateProductCommand(string Name,
-                                   List<string> Category,
+                                   int CategoryId,
                                    string Description,
                                    string ImageFile,
                                    decimal Price) : ICommand<CreateProductResult>;
@@ -21,7 +21,7 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
            .Length(2, 150)
            .WithMessage("Invalid Name");
 
-        RuleFor(c => c.Category).NotEmpty().WithMessage("Category is required");
+        RuleFor(c => c.CategoryId).NotEmpty().WithMessage("Category is required");
 
         RuleFor(c => c.Description).NotEmpty().WithMessage("Description is required");
 
@@ -53,13 +53,13 @@ internal class CreateProductCommandHandler(CatalogDBContext context)
         var product = new Product
         {
             Name = command.Name,
-            Category = command.Category,
+            Category = command.CategoryId,
             Description = command.Description,
             ImageFile = command.ImageFile,
             Price = command.Price
         };
         // save to db
-        context.Products.Add(product);
+        context.Product.Add(product);
         await context.SaveChangesAsync(cancellationToken);
 
         //return result

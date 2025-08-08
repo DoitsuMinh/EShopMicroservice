@@ -4,7 +4,7 @@ namespace Catalog.API.Models;
 
 public class ProductQty : BaseModel
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     public long ProdetailId { get; set; }
     
     [Description("Available for sale stock. Might exclude reserved or damaged items.")]
@@ -26,5 +26,5 @@ public class ProductQty : BaseModel
     public int OnReOrder { get; set; }
 
     [Description("Quantity of product being returned or under quality check")]
-    public int OnReturn { get; set; } 
+    public int OnReturn { get; set; }
 }

@@ -42,7 +42,7 @@ public class UpdateProductCommandHandler(CatalogDBContext context)
 {
     public async Task<UpdateProductResult> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
     {
-        var product = await context.Products.FindAsync([command.Product.Id], cancellationToken) ?? throw new ProductNotFoundException(command.Product.Id);
+        var product = await context.Product.FindAsync([command.Product.Id], cancellationToken) ?? throw new ProductNotFoundException(command.Product.Id);
         product.Name = command.Product.Name;
         product.Category = command.Product.Category;
         product.Description = command.Product.Description;
@@ -50,7 +50,7 @@ public class UpdateProductCommandHandler(CatalogDBContext context)
         product.Price = command.Product.Price;
         product.Status = command.Product.Status;
 
-        context.Products.Update(product);
+        context.Product.Update(product);
         await context.SaveChangesAsync(cancellationToken);
         var result = new UpdateProductResult(true);
         return result;

@@ -9,7 +9,7 @@ internal class GetProductByIdQueryHandler(CatalogDBContext context)
 {
     public async Task<GetProductByIdResult> Handle(GetProductByIdQuery query, CancellationToken cancellationToken)
     {
-        var product = await context.Products.FindAsync(query.Id);
+        var product = await context.Product.FindAsync(query.Id);
         if (product is null)
         {
             throw new ProductNotFoundException(query.Id);

@@ -1,5 +1,5 @@
 ﻿using BuildingBlocks.CQRS.Commands;
-using Catalog.API.Products.UpdateProduct;
+using Catalog.API.Enums;
 
 namespace Catalog.API.Products.DeleteProduct;
 
@@ -20,9 +20,9 @@ public class DeleteProductCommandHandler(CatalogDBContext context)
 {
     public async Task<DeleteProductResult> Handle(DeleteProductCommand command, CancellationToken cancellationToken)
     {
-        var product = await context.Products.FindAsync([command.Id], cancellationToken) ?? throw new ProductNotFoundException(command.Id);
-        product.Status = false;
-        context.Products.Update(product);
+        var product = await context.Product.FindAsync([command.Id], cancellationToken) ?? throw new ProductNotFoundException(command.Id);
+        product.Status = Status.Inactive;
+        context.Product.Update(product);
         await context.SaveChangesAsync(cancellationToken);
         var result = new DeleteProductResult(true);
         return result;

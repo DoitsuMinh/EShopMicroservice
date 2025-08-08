@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.API.Products.GetProducts.GetProductsByCategory;
 
-public record GetProductsByCategoryQuery(string Categories) : IQuery<GetProductsByCategoryResult>;
+public record GetProductsByCategoryQuery(int Categories) : IQuery<GetProductsByCategoryResult>;
 public record GetProductsByCategoryResult(IEnumerable<Product> Products);
 
 public class GetProductsByCategoryCommandHandler(CatalogDBContext context)
@@ -11,8 +11,8 @@ public class GetProductsByCategoryCommandHandler(CatalogDBContext context)
 {
     public async Task<GetProductsByCategoryResult> Handle(GetProductsByCategoryQuery query, CancellationToken cancellationToken)
     {
-        var products = await context.Products
-                                    .Where(p => p.Category.Contains(query.Categories))
+        var products = await context.Product
+                                    .Where(p => p.Category == query.Categories)
                                     .ToListAsync(cancellationToken);
 
         return new GetProductsByCategoryResult(products);

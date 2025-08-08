@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Catalog.API.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.API.Products.GetProducts;
 
@@ -10,15 +11,35 @@ internal class GetProductsQueryHandler (CatalogDBContext context)
 {
     public async Task<GetProductsResult> Handle(GetProductsQuery query, CancellationToken cancellationToken)
     {
-        var pageNumber = query.PageNumber ?? 1;
-        var pageSize = query.PageSize ?? 10;
+        try
+        {
+            var pageNumber = query.PageNumber ?? 1;
+            var pageSize = query.PageSize ?? 10;
 
-        var products = await context.Products
-            .Where(p => p.Status)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
+            var products = await context.Product
+                .Where(p => p.Status == Status.Active)
+                .Select(p => new Product
+                {
+                    Name = p.Name,
+                    Category = p.Category,
+                    Description = p.Description,
+                    ImageFile = p.ImageFile,
+                    Price = p.Price,
+                    Id = p.Id,
+                    Status = p.Status,
+                    CreatedDate = p.CreatedDate,
+                    UpdatedDate = p.UpdatedDate
+                })
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
 
-        return new GetProductsResult(products);
+            return new GetProductsResult(products);
+        } catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+
+       
     }
 }
