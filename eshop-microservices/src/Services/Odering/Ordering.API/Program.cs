@@ -1,4 +1,4 @@
-// Shoule be using SQL Server/ MySQL with EF core, but i'm using PostgreSQL with Dapper
+// Shoule be using SQL Server/ MySQL with EF core, but i'm using PostgreSQL with Dapper, EF core
 using Microsoft.AspNetCore;
 using Ordering.API;
 
