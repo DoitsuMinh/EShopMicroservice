@@ -2,10 +2,8 @@
 
 namespace Catalog.API.Models;
 
-public class ProductQty : BaseModel
+public class ProductQty
 {
-    public long Id { get; set; }
-    public long ProdetailId { get; set; }
     
     [Description("Available for sale stock. Might exclude reserved or damaged items.")]
     public int Available { get; set; }

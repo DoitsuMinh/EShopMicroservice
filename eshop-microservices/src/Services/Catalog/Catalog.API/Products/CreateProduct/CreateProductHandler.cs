@@ -4,10 +4,10 @@ using BuildingBlocks.CQRS.Commands;
 namespace Catalog.API.Products.CreateProduct;
 
 public record CreateProductCommand(string Name,
-                                   int CategoryId,
+                                   string Category,
                                    string Description,
-                                   string ImageFile,
-                                   decimal Price) : ICommand<CreateProductResult>;
+                                   string Brand,
+                                   List<ProductDetail> Details) : ICommand<CreateProductResult>;
 
 public record CreateProductResult(long Id);
 

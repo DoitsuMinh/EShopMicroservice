@@ -1,20 +1,27 @@
-﻿namespace Catalog.API.Products.GetProductById;
+﻿using Catalog.API.Services;
+
+namespace Catalog.API.Products.GetProductById;
 
 public record GetProductByIdQuery(long Id) :IQuery<GetProductByIdResult>;
 
 public record GetProductByIdResult(Product Product);
 
-internal class GetProductByIdQueryHandler(CatalogDBContext context)
+internal class GetProductByIdQueryHandler
     : IQueryHandler<GetProductByIdQuery, GetProductByIdResult>
 {
+    private readonly IProductRepository _productRepository;
+
+    public GetProductByIdQueryHandler(IProductRepository productRepository)
+    {
+        _productRepository = productRepository;
+    }
+
     public async Task<GetProductByIdResult> Handle(GetProductByIdQuery query, CancellationToken cancellationToken)
     {
-        var product = await context.Product.FindAsync(query.Id);
-        if (product is null)
-        {
-            throw new ProductNotFoundException(query.Id);
-        }
-        return new GetProductByIdResult(product);
+        var product = await _productRepository.GetByIdAsync(query.Id.ToString(), cancellationToken);
+        return product is null 
+            ? throw new ProductNotFoundException(query.Id) 
+            : new GetProductByIdResult(product);
     }
 }
 

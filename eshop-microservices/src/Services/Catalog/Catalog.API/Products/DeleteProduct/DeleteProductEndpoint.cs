@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.API.Products.DeleteProduct;
 
-public record class DeleteProductRequest(long Id);
+public record class DeleteProductRequest(string Id);
 
 public record DeleteProductResponse(bool IsSuccess);
 

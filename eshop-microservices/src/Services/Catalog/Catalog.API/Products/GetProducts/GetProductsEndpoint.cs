@@ -32,7 +32,7 @@ public class GetProductsEndpoint : ICarterModule
         .WithDescription("Get Products");
 
         app.MapGet("/products/{categories}", async (
-            int categories,
+            string categories,
             ISender sender) =>
         {
             var result = await sender.Send(new GetProductsByCategoryQuery(categories));

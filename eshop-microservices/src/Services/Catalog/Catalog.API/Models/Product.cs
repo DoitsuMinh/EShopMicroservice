@@ -1,17 +1,34 @@
 ﻿using Catalog.API.Enums;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Catalog.API.Models;
 
-public class Product : BaseModel
+
+public class Product
 {
-    [Key]
-    public long Id { get; set; }
-    public string Name { get; set; } = default!;
-    public int Category { get; set; }
-    public string Description { get; set; } = default!;
-    public string ImageFile { get; set; } = default!;
-    public decimal Price { get; set; } = default!;
-    public Status Status { get; set; }
-    public ICollection<ProductDetail> ProductDetails { get; set; }
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string? Id { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string Name { get; set; } = string.Empty;
+
+    [StringLength(500)]
+    public string Description { get; set; } = string.Empty;
+
+    [Required]
+    public string Category { get; set; } = string.Empty;
+
+    [Required]
+    public string Brand { get; set; } = string.Empty;
+
+    public List<ProductDetail> ProductDetails { get; set; } = [];
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public string Status { get; set; } = default!;
 }

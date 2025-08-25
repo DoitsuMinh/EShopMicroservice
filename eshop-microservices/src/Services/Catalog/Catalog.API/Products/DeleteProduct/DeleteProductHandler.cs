@@ -1,9 +1,9 @@
 ﻿using BuildingBlocks.CQRS.Commands;
-using Catalog.API.Enums;
+using Catalog.API.Services;
 
 namespace Catalog.API.Products.DeleteProduct;
 
-public record DeleteProductCommand(long Id) : ICommand<DeleteProductResult>;
+public record DeleteProductCommand(string Id) : ICommand<DeleteProductResult>;
 
 public record DeleteProductResult(bool IsSuccess);
 
@@ -11,19 +11,22 @@ public class DeleteProductCommandValidator : AbstractValidator<DeleteProductComm
 {
     public DeleteProductCommandValidator ()
     {
-        RuleFor(c => c.Id).GreaterThan(0).NotEmpty().WithMessage("Invalid Id input");
+        RuleFor(c => c.Id).NotEmpty().WithMessage("Invalid Id input");
     }
 }
 
-public class DeleteProductCommandHandler(CatalogDBContext context)
+public class DeleteProductCommandHandler
     : ICommandHandler<DeleteProductCommand, DeleteProductResult>
 {
+    private readonly IProductRepository _productRepository;
+
+    public DeleteProductCommandHandler(IProductRepository productRepository)
+    {
+        _productRepository = productRepository;
+    }
     public async Task<DeleteProductResult> Handle(DeleteProductCommand command, CancellationToken cancellationToken)
     {
-        var product = await context.Product.FindAsync([command.Id], cancellationToken) ?? throw new ProductNotFoundException(command.Id);
-        product.Status = Status.Inactive;
-        context.Product.Update(product);
-        await context.SaveChangesAsync(cancellationToken);
+        await _productRepository.DeleteAsync(command.Id);
         var result = new DeleteProductResult(true);
         return result;
     }

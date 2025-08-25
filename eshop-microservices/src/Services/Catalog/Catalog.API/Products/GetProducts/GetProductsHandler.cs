@@ -1,14 +1,19 @@
 ﻿using Catalog.API.Enums;
-using Microsoft.EntityFrameworkCore;
+using Catalog.API.Services;
 
 namespace Catalog.API.Products.GetProducts;
 
 public record GetProductsQuery(int? PageNumber = 1, int? PageSize = 10) : IQuery<GetProductsResult>;
 public record GetProductsResult(IEnumerable<Product> Products);
 
-internal class GetProductsQueryHandler (CatalogDBContext context)
+internal class GetProductsQueryHandler
     : IQueryHandler<GetProductsQuery, GetProductsResult>
 {
+    private readonly IProductRepository _productRepository;
+    public GetProductsQueryHandler(IProductRepository productRepository)
+    {
+        _productRepository = productRepository;
+    }
     public async Task<GetProductsResult> Handle(GetProductsQuery query, CancellationToken cancellationToken)
     {
         try
@@ -16,23 +21,10 @@ internal class GetProductsQueryHandler (CatalogDBContext context)
             var pageNumber = query.PageNumber ?? 1;
             var pageSize = query.PageSize ?? 10;
 
-            var products = await context.Product
-                .Where(p => p.Status == Status.Active)
-                .Select(p => new Product
-                {
-                    Name = p.Name,
-                    Category = p.Category,
-                    Description = p.Description,
-                    ImageFile = p.ImageFile,
-                    Price = p.Price,
-                    Id = p.Id,
-                    Status = p.Status,
-                    CreatedDate = p.CreatedDate,
-                    UpdatedDate = p.UpdatedDate
-                })
+            var products = await _productRepository.GetAllAsync(cancellationToken);
+            var result = products
                 .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync(cancellationToken);
+                .Take(pageSize);
 
             return new GetProductsResult(products);
         } catch (Exception ex)

@@ -3,7 +3,7 @@ using Catalog.API.Products.GetProducts;
 
 namespace Catalog.API.Products.GetProductById;
 
-public record GetProductByIdRequest(long Id);
+public record GetProductByIdRequest(string Id);
 public record GetProductByIdResponse(Product Product);
 public class GetProductByIdEndpoint : ICarterModule
 {

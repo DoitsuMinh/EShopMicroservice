@@ -1,6 +1,7 @@
+using Catalog.API.Configurations;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,17 +18,15 @@ builder.Services.AddValidatorsFromAssembly(assembly);
 
 builder.Services.AddCarter();
 
-builder.Services.AddDbContext<CatalogDBContext>(opts =>
-{
-    opts.UseSqlServer(builder.Configuration.GetConnectionString("Database")!);
-
-});
+// Bind MongoDB settings
+var mongoDbSettings = builder.Configuration.GetSection("DatabaseSettings").Get<DbSettings>();
+builder.Services.AddSingleton<IMongoClient>(new MongoClient(mongoDbSettings.ConnectionString));
 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 builder.Services
     .AddHealthChecks()
-    .AddSqlServer(builder.Configuration.GetConnectionString("Database")!);
+    .AddMongoDb(name: "CatalogDb");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -51,12 +50,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
 
     // Create database and seed data without migrations
-    using (var scope = app.Services.CreateScope())
-    {
-        var dbContext = scope.ServiceProvider.GetRequiredService<CatalogDBContext>();
-        //await dbContext.Database.EnsureCreatedAsync();
-        //await CatalogInitialData.SeedAsync(dbContext);
-    }
+    //using (var scope = app.Services.CreateScope())
+    //{
+    //    var dbContext = scope.ServiceProvider.GetRequiredService<CatalogDBContext>();
+    //    await dbContext.Database.EnsureCreatedAsync();
+    //    await CatalogInitialData.SeedAsync(dbContext);
+    //}
 }
 
 app.UseHealthChecks("/health",
