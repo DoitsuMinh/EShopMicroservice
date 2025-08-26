@@ -21,6 +21,13 @@ builder.Services.AddCarter();
 // Bind MongoDB settings
 var mongoDbSettings = builder.Configuration.GetSection("DatabaseSettings").Get<DbSettings>();
 builder.Services.AddSingleton<IMongoClient>(new MongoClient(mongoDbSettings.ConnectionString));
+builder.Services.AddScoped<IMongoDatabase>(serviceProvider =>
+{
+    var client = serviceProvider.GetRequiredService<IMongoClient>();
+    var settings = serviceProvider.GetRequiredService<IConfiguration>().GetSection("DatabaseSettings").Get<DbSettings>();
+    return client.GetDatabase(settings.DatabaseName);
+});
+
 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 

@@ -16,7 +16,7 @@ public class ProductRepository : IProductRepository
 
         var database = mongoClient.GetDatabase(productDbSettings.Value.DatabaseName);
 
-        _productsCollection = database.GetCollection<Product>(productDbSettings.Value.ProductCollectionName);
+        _productsCollection = database.GetCollection<Product>(productDbSettings.Value.CollectionName);
     }
 
     public async Task CreateAsync(Product product)

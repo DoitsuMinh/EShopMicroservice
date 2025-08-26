@@ -21,16 +21,9 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
            .Length(2, 150)
            .WithMessage("Invalid Name");
 
-        RuleFor(c => c.CategoryId).NotEmpty().WithMessage("Category is required");
+        RuleFor(c => c.Category).NotEmpty().WithMessage("Category is required");
 
         RuleFor(c => c.Description).NotEmpty().WithMessage("Description is required");
-
-        RuleFor(c => c.Price).GreaterThan(0).WithMessage("Price is required");
-
-        RuleFor(c => c.ImageFile)
-        .NotEmpty()
-        .Must(i => IsValidImageExtension(i))
-        .WithMessage("Invalid image file");
     }
 
     private static bool IsValidImageExtension(string imageFile)
