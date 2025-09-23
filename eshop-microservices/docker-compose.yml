@@ -1,6 +1,6 @@
 services:
   catalogdb:
-    image: mcr.microsoft.com/mssql/server
+    image: postgres
 
   distributedcache:
     image: redis

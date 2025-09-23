@@ -1,6 +1,6 @@
 ﻿namespace Catalog.API.Exceptions;
 
-public class ProductNotFoundException(long id) : NotFoundException("Product", id)
+public class ProductNotFoundException(Guid id) : NotFoundException("Product", id)
 {
 }
 

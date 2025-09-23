@@ -15,6 +15,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
     <PackageReference Include="Carter" Version="8.2.1" />
+    <PackageReference Include="Marten" Version="7.40.1" />
 
 	<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.4" />
 

@@ -1,7 +1,3 @@
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.EntityFrameworkCore;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
@@ -16,28 +12,23 @@ builder.Services.AddMediatR(config =>
 builder.Services.AddValidatorsFromAssembly(assembly);
 
 builder.Services.AddCarter();
-
-builder.Services.AddDbContext<CatalogDBContext>(opts =>
+builder.Services.AddMarten(opts =>
 {
-    opts.UseSqlServer(builder.Configuration.GetConnectionString("Database")!);
+    var connectionString = builder.Configuration.GetConnectionString("Database");
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("Database connection string is not configured.");
+    }
 
-});
+    opts.Connection(connectionString);
+}).UseLightweightSessions();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.InitializeMartenWith<CatalogInitialData>();
+}
 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
-
-builder.Services
-    .AddHealthChecks()
-    .AddSqlServer(builder.Configuration.GetConnectionString("Database")!);
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new()
-    {
-        Title = builder.Environment.ApplicationName,
-        Version = "v1"
-    });
-});
 
 var app = builder.Build();
 
@@ -45,24 +36,5 @@ var app = builder.Build();
 app.MapCarter();
 
 app.UseExceptionHandler(options => { });
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-
-    // Create database and seed data without migrations
-    using (var scope = app.Services.CreateScope())
-    {
-        var dbContext = scope.ServiceProvider.GetRequiredService<CatalogDBContext>();
-        //await dbContext.Database.EnsureCreatedAsync();
-        //await CatalogInitialData.SeedAsync(dbContext);
-    }
-}
-
-app.UseHealthChecks("/health",
-    new HealthCheckOptions
-    {
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-    });
 
 app.Run();

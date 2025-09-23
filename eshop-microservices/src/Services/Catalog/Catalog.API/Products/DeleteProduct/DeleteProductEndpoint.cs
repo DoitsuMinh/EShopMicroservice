@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.API.Products.DeleteProduct;
 
-public record class DeleteProductRequest(long Id);
+public record class DeleteProductRequest(Guid Id);
 
 public record DeleteProductResponse(bool IsSuccess);
 
@@ -11,7 +11,7 @@ public class DeleteProductEndpoint() : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapDelete("/products", async ([FromBody] DeleteProductRequest request, ISender sender) =>
+        app.MapDelete("/products", async ([FromBody]DeleteProductRequest request, ISender sender) =>
         {
             var command = request.Adapt<DeleteProductCommand>();
 
