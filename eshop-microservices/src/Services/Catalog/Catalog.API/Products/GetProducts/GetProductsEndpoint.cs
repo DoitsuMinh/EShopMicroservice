@@ -19,8 +19,6 @@ public class GetProductsEndpoint : ICarterModule
             var query = request.Adapt<GetProductsQuery>();
             var result = await sender.Send(query);
 
-            //var result = await sender.Send(new GetProductsQuery());
-
             var response = result.Adapt<GetProductsResponse>();
 
             return Results.Ok(response);

@@ -2,7 +2,7 @@
 
 namespace Basket.API.Data;
 
-public class CacheCartService(IDistributedCache _cache) : ICartRepository
+public class CachedCartService(IDistributedCache _cache) : ICartRepository
 {
     public async Task<bool> DeleteCartAsync(string key, CancellationToken cancellationToken = default)
     {
@@ -25,10 +25,10 @@ public class CacheCartService(IDistributedCache _cache) : ICartRepository
     public async Task<ShoppingCart?> SetCartAsync(ShoppingCart cart, CancellationToken cancellationToken = default)
     {
         var data = JsonConvert.SerializeObject(cart);
-        await _cache.SetStringAsync(cart.Id!, data, new DistributedCacheEntryOptions
+        await _cache.SetStringAsync(cart.UserName!, data, new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
         }, cancellationToken);
-        return await GetCartAsync(cart.Id, cancellationToken);
+        return await GetCartAsync(cart.UserName, cancellationToken);
     }
 }

@@ -2,10 +2,9 @@
 
 public class CartItem
 {
-    public long Id { get; set; } = default!;
-    public string Name { get; set; } = default!;
-    public decimal Price { get; set; }
+    public string ItemName { get; set; } = default!;
+    public decimal Price { get; set; } = default!;
     public int Quantity { get; set; }
-    public string ImageFile { get; set; } = default!;
-    public List<string> Category { get; set; } = [];
+    public string Color { get; set; } = default!;
+    public Guid ProductId { get; set; }
 }

@@ -11,7 +11,7 @@ public class SetBasketCommandValidator : AbstractValidator<SetBasketCommand>
 {
     public SetBasketCommandValidator()
     {
-        RuleFor(x => x.ShoppingCart.Id)
+        RuleFor(x => x.ShoppingCart.UserName)
             .NotNull()
             .WithMessage("Invalid shopping cart");
 
@@ -19,13 +19,13 @@ public class SetBasketCommandValidator : AbstractValidator<SetBasketCommand>
             .NotEmpty()
             .WithMessage("Items cannot be empty");
 
-        RuleFor(x => x.ShoppingCart.DeliveryMethodId)
-            .NotEmpty()
-            .WithMessage("Delivery method cannot be empty");
 
         RuleForEach(x => x.ShoppingCart.Items)
-            .Must(item => item.Quantity >= 1)
-            .WithMessage("Quantity must be greater than one");
+            .Must(item => item.Quantity > 0).WithMessage("Invalid item quantity")
+            .Must(item => !string.IsNullOrEmpty(item.ItemName)).WithMessage("Invalid item name")
+            .Must(item => item.Price >= 0).WithMessage("Invalid item price")
+            .Must(item => item.Color != null && item.Color != " ").WithMessage("Invalid item color")
+            .Must(item => item.ProductId != Guid.Empty).WithMessage("Invalid ProductId");
     }
 }
 
@@ -41,27 +41,24 @@ public class SetBasketCommandHandler(
         // Store basket in redis
         var updatedCart = 
             await cartRepository.SetCartAsync(command.ShoppingCart) 
-            ?? throw new RedisDbException("Problem writing to redis database", command.ShoppingCart.Id!);
+            ?? throw new RedisDbException("Problem writing to redis database", command.ShoppingCart.UserName!);
 
         return new SetBasketResult(updatedCart);
     }
 
     private async Task DeductDiscount(ShoppingCart cart, CancellationToken cancellationToken)
     {
-        foreach (var item in cart.Items)
+        var tasks = cart.Items.Select(async item =>
         {
-            var coupon = await discountProtoServiceClient.GetDiscountAsync(new GetDiscountRequest
-            {
-                ProductName = item.Name
-            }, cancellationToken: cancellationToken);
+            var coupon = await discountProtoServiceClient.GetDiscountAsync(
+                                new GetDiscountRequest { ProductName = item.ItemName },
+                                cancellationToken: cancellationToken);
 
-            if (coupon.Amount >= item.Price)
-            {
-                item.Price = 0;
-            } else
-            {
-                item.Price -= coupon.Amount;
-            }            
-        }
+            item.Price = coupon.Amount >= item.Price
+                ? 0
+                : item.Price - coupon.Amount;
+        });
+
+        await Task.WhenAll(tasks);
     }
 }

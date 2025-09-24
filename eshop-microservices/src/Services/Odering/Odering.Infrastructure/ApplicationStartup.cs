@@ -157,14 +157,15 @@ public class ApplicationStartup
             // Build the Autofac container
             var buildContainer = container.Build();
 
+            // Set the built container as the composition root for the application
+            CompositionRoot.SetContainer(buildContainer);
+
+
             // Set the service locator provider to use Autofac
             ServiceLocator.SetLocatorProvider(() => new AutofacServiceLocator(buildContainer));
 
             // Create an Autofac service provider from the built container
             var serviceProvider = new AutofacServiceProvider(buildContainer);
-
-            // Set the built container as the composition root for the application
-            CompositionRoot.SetContainer(buildContainer);
 
             // Return the configured service provider
             return serviceProvider;

@@ -19,92 +19,84 @@ public class CatalogInitialData : IInitialData
     private static IEnumerable<Product> GetPreconfiguredProducts() =>
     [
         new Product {
-            Name = "Tactical Combat Boots",
-            Category = ["Apparel", "Footwear", "Military"],
-            Description = "High-durability boots designed for rough terrain and tactical missions",
-            ImageFile = "combat_boots.jpg",
-            Price = 149.99m,
+            Name = "Casual T-Shirt",
+            Category = ["Apparel", "Clothing", "Casual"],
+            Description = "Comfortable cotton t-shirt available in various colors",
+            ImageFile = "casual_tshirt.jpg",
+            Price = 19.99m,
             Status = true
         },
         new Product {
-            Name = "Night Vision Goggles",
-            Category = ["Equipment", "Optics", "Military"],
-            Description = "Gen-3 infrared night vision goggles for stealth operations",
-            ImageFile = "nv_goggles.jpg",
-            Price = 2499.00m,
+            Name = "Denim Jeans",
+            Category = ["Apparel", "Clothing", "Casual"],
+            Description = "Classic blue denim jeans with a modern fit",
+            ImageFile = "denim_jeans.jpg",
+            Price = 49.99m,
             Status = true
         },
         new Product {
-
-            Name = "Tactical Vest",
-            Category = ["Gear", "Protection", "Military"],
-            Description = "Modular tactical vest with ballistic plate support",
-            ImageFile = "tactical_vest.jpg",
-            Price = 289.50m,
+            Name = "Formal Suit",
+            Category = ["Apparel", "Clothing", "Formal"],
+            Description = "Elegant two-piece suit for formal occasions",
+            ImageFile = "formal_suit.jpg",
+            Price = 199.99m,
             Status = true
         },
         new Product {
-
-            Name = "Camouflage Uniform Set",
-            Category = ["Apparel", "Uniform", "Military"],
-            Description = "Multi-terrain camo uniform with moisture-wicking fabric",
-            ImageFile = "camo_uniform.jpg",
+            Name = "Winter Jacket",
+            Category = ["Apparel", "Clothing", "Outerwear"],
+            Description = "Insulated jacket designed for cold weather",
+            ImageFile = "winter_jacket.jpg",
+            Price = 129.99m,
+            Status = true
+        },
+        new Product {
+            Name = "Running Shoes",
+            Category = ["Apparel", "Footwear", "Sports"],
+            Description = "Lightweight running shoes with excellent grip",
+            ImageFile = "running_shoes.jpg",
             Price = 89.99m,
             Status = true
         },
         new Product {
-
-            Name = "Military Backpack 60L",
-            Category = ["Gear", "Bags", "Military"],
-            Description = "Heavy-duty 60-liter rucksack with Molle system",
-            ImageFile = "military_backpack.jpg",
-            Price = 79.99m,
+            Name = "Summer Dress",
+            Category = ["Apparel", "Clothing", "Casual"],
+            Description = "Light and breezy summer dress for warm days",
+            ImageFile = "summer_dress.jpg",
+            Price = 39.99m,
             Status = true
         },
         new Product {
-
-            Name = "Field Radio Transceiver",
-            Category = ["Communication", "Equipment", "Military"],
-            Description = "Encrypted VHF/UHF handheld field radio",
-            ImageFile = "field_radio.jpg",
-            Price = 499.00m,
+            Name = "Leather Belt",
+            Category = ["Apparel", "Accessories", "Formal"],
+            Description = "Genuine leather belt with a sleek buckle",
+            ImageFile = "leather_belt.jpg",
+            Price = 29.99m,
             Status = true
         },
         new Product {
-
-            Name = "Combat Knife",
-            Category = ["Weapons", "Tools", "Military"],
-            Description = "Full-tang steel combat knife with tactical sheath",
-            ImageFile = "combat_knife.jpg",
-            Price = 59.99m,
+            Name = "Wool Scarf",
+            Category = ["Apparel", "Accessories", "Winter"],
+            Description = "Soft wool scarf to keep you warm in winter",
+            ImageFile = "wool_scarf.jpg",
+            Price = 24.99m,
             Status = true
         },
         new Product {
-
-            Name = "Ballistic Helmet",
-            Category = ["Protection", "Headgear", "Military"],
-            Description = "NIJ Level IIIA ballistic combat helmet",
-            ImageFile = "helmet.jpg",
-            Price = 399.99m,
+            Name = "Hoodie",
+            Category = ["Apparel", "Clothing", "Casual"],
+            Description = "Cozy hoodie with a front pocket and drawstring hood",
+            ImageFile = "hoodie.jpg",
+            Price = 49.99m,
             Status = true
         },
         new Product {
-
-            Name = "Drone Recon System",
-            Category = ["Surveillance", "Technology", "Military"],
-            Description = "Reconnaissance drone with real-time HD video and GPS",
-            ImageFile = "drone.jpg",
-            Price = 6999.00m,
-            Status = true
-        },
-        new Product {
-            Name = "Portable Ration Pack (MRE)",
-            Category = ["Supplies", "Food", "Military"],
-            Description = "24-hour meal kit for field deployment - 3000 kcal",
-            ImageFile = "mre.jpg",
-            Price = 19.99m,
+            Name = "Sneakers",
+            Category = ["Apparel", "Footwear", "Casual"],
+            Description = "Trendy sneakers for everyday wear",
+            ImageFile = "sneakers.jpg",
+            Price = 69.99m,
             Status = true
         }
     ];
-
 }

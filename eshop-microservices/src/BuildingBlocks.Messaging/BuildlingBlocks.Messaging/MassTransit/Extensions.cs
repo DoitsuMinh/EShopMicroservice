@@ -7,7 +7,8 @@ namespace BuildlingBlocks.Messaging.MassTransit;
 
 public static class Extensions
 {
-    public static IServiceCollection AddMessageBroker(this IServiceCollection services, IConfiguration configuration, Assembly? assembly = null)
+    public static IServiceCollection AddMessageBroker
+        (this IServiceCollection services, IConfiguration configuration, Assembly? assembly = null)
     {
         services.AddMassTransit(config =>
         {
@@ -19,6 +20,19 @@ public static class Extensions
             config.SetKebabCaseEndpointNameFormatter();
 
             // Register the consumers from the specified assembly
+            /*
+             * assembly: Ordering.Application
+             * Consumer: BasketCheckoutEventHandler
+             * Endpoint: basket-checkout-event-handler
+             * Queue: basket-checkout-event-handler
+             * Message: BasketCheckoutEvent
+             * Routing Key: basket-checkout-event
+             * Exchange: basket-checkout-event
+             * Binding: basket-checkout-event -> basket-checkout-event-handler
+             * Message Type: BasketCheckoutEvent
+             * Handler Method: Consume
+             * Message Body: BasketCheckoutEvent
+             */
             if (assembly is not null)
             {
                 config.AddConsumers(assembly);

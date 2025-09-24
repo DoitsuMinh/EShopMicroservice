@@ -1,3 +1,4 @@
+using BuildlingBlocks.Messaging.MassTransit;
 using Discount.Grpc;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -32,7 +33,7 @@ builder.Services.AddCarter();
 //    var configuration = ConfigurationOptions.Parse(connString, true);
 //    return ConnectionMultiplexer.Connect(configuration);
 //});
-builder.Services.AddScoped<ICartRepository, CacheCartService>();
+builder.Services.AddScoped<ICartRepository, CachedCartService>();
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis")!;
@@ -53,10 +54,13 @@ builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
     return handler;
 });
 
+// Async Communicatin Services
+builder.Services.AddMessageBroker(builder.Configuration);
 
-//Cross-Cutting Services
+// Cross-Cutting Services
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
+// Health Checks
 builder.Services.AddHealthChecks()
     //.AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
     .AddRedis(builder.Configuration.GetConnectionString("Redis")!);

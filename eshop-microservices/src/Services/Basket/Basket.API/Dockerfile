@@ -13,6 +13,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/Services/Basket/Basket.API/Basket.API.csproj", "src/Services/Basket/Basket.API/"]
+COPY ["src/BuildingBlocks.Messaging/BuildlingBlocks.Messaging/BuildlingBlocks.Messaging.csproj", "src/BuildingBlocks.Messaging/BuildlingBlocks.Messaging/"]
 COPY ["src/BuildingBlocks/BuildingBlocks.csproj", "src/BuildingBlocks/"]
 RUN dotnet restore "./src/Services/Basket/Basket.API/Basket.API.csproj"
 COPY . .

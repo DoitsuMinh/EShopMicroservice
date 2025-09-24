@@ -21,12 +21,12 @@ public class CartService(Redis.IConnectionMultiplexer redis)
     public async Task<ShoppingCart?> SetCartAsync(ShoppingCart cart, CancellationToken cancellationToken = default)
     {
         var createdCart = await _database.StringSetAsync(
-                            cart.Id,
+                            cart.UserName,
                             JsonConvert.SerializeObject(cart),
                             expiry: TimeSpan.FromHours(1));
 
         if (!createdCart) return null;
         
-        return await GetCartAsync(cart.Id!);
+        return await GetCartAsync(cart.UserName!);
     }
 }

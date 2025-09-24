@@ -13,7 +13,7 @@ public class SetBasketEndpoint : ICarterModule
             var command = request.Adapt<SetBasketCommand>();
             var result = await sender.Send(command);
             var response = result.Adapt<SetBasketResponse>();
-            return Results.Created($"/basket/{response.ShoppingCart.Id}", response);
+            return Results.Created($"/basket/{response.ShoppingCart.UserName}", response);
         })
         .WithName("SetBasket")
         .Produces<SetBasketResponse>(StatusCodes.Status201Created)
