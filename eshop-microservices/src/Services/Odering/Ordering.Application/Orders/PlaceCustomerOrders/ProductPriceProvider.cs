@@ -28,6 +28,6 @@ public static class ProductPriceProvider
     {
         public Guid ProductId { get; set; }
         public decimal Value { get; set; }
-        public string Currency { get; set; }
+        public string Currency { get; set; } = default!;
     }
 }

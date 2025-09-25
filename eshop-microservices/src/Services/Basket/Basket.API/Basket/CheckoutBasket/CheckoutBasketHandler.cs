@@ -48,6 +48,12 @@ public class CheckoutBasketHandler
         var eventMessage = command.BasketCheckoutDto.Adapt<BasketCheckoutEvent>();
         eventMessage.TotalPrice = basket.TotalPrice;
 
-        throw new NotImplementedException();
+        // Step 3
+        await _publishEndpoint.Publish(eventMessage, cancellationToken);
+
+        // Step 4
+        await _cartRepository.DeleteCartAsync(command.BasketCheckoutDto.UserName, cancellationToken);
+
+        return new CheckoutBasketResult(true);
     }
 }

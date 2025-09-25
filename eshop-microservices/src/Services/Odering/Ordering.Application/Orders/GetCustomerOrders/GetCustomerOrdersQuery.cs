@@ -1,4 +1,4 @@
-﻿using Ordering.Application.Configuration.Queries;
+﻿using Ordering.Application.Configuration.CQRS.Queries;
 
 namespace Ordering.Application.Orders.GetCustomerOrders;
 

@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Npgsql;
+using Ordering.Application.Configuration.CQRS.Queries;
 using Ordering.Application.Configuration.Data;
-using Ordering.Application.Configuration.Queries;
 using Ordering.Domain.Customers.Exceptions;
 
 namespace Ordering.Application.Customers.GetCustomerDetails;

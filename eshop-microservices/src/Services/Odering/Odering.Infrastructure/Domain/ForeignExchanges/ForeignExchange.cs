@@ -50,7 +50,8 @@ public class ForeignExchange : IForeignExchange
         var request = new FreeCurrencyApiRequest(
             _config["FreeCurrencyApi:ApiKey"] ?? string.Empty,
             _config["FreeCurrencyApi:BaseCurrency"] ?? string.Empty,
-            _config.GetSection("FreeCurrencyApi:SupportedCurrencies").Get<List<string>>() ?? []);
+            _config["FreeCurrencyApi:SupportedCurrencies"]?.Split(',').ToList() ?? new List<string>()
+            );
 
         var response = await GetLastesRatesAsync(request);
 

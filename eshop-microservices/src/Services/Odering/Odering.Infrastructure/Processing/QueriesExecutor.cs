@@ -1,6 +1,6 @@
 ﻿using Autofac;
 using MediatR;
-using Ordering.Application.Configuration.Queries;
+using Ordering.Application.Configuration.CQRS.Queries;
 
 namespace Odering.Infrastructure.Processing;
 

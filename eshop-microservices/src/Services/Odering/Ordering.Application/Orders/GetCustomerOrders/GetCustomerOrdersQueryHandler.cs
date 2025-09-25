@@ -1,6 +1,6 @@
 ﻿using Dapper;
+using Ordering.Application.Configuration.CQRS.Queries;
 using Ordering.Application.Configuration.Data;
-using Ordering.Application.Configuration.Queries;
 
 namespace Ordering.Application.Orders.GetCustomerOrders;
 

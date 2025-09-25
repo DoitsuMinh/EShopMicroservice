@@ -1,4 +1,5 @@
-﻿using HealthChecks.UI.Client;
+﻿using BuildlingBlocks.Messaging.MassTransit;
+using HealthChecks.UI.Client;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Caching.Memory;
@@ -14,6 +15,7 @@ using Ordering.Infrastructure.Caching;
 using Serilog;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.SystemConsole.Themes;
+using System.Reflection;
 using ILogger = Serilog.ILogger;
 
 
@@ -55,6 +57,8 @@ public class Startup
             services.AddSwaggerDocumentation();
 
             services.AddHealthChecks().AddNpgSql(_configuration[ConnectionStrings]);
+
+            services.AddMessageBroker(_configuration, Assembly.GetExecutingAssembly());
 
             services.AddProblemDetails(x =>
             {

@@ -30,17 +30,17 @@ public class SetBasketCommandValidator : AbstractValidator<SetBasketCommand>
 }
 
 public class SetBasketCommandHandler(
-    ICartRepository cartRepository, DiscountProtoService.DiscountProtoServiceClient discountProtoServiceClient) 
+    ICartRepository cartRepository, DiscountProtoService.DiscountProtoServiceClient discountProtoServiceClient)
     : ICommandHandler<SetBasketCommand, SetBasketResult>
 {
     public async Task<SetBasketResult> Handle(SetBasketCommand command, CancellationToken cancellationToken)
     {
-        // TODO: communicate with Discount.Grpc and calculate latest price of products in the baseket
+        // TODO: communicate with Discount.Grpc and calculate latest price of products in the basket
         await DeductDiscount(command.ShoppingCart, cancellationToken);
 
         // Store basket in redis
-        var updatedCart = 
-            await cartRepository.SetCartAsync(command.ShoppingCart) 
+        var updatedCart =
+            await cartRepository.SetCartAsync(command.ShoppingCart, cancellationToken) // Pass cancellationToken here
             ?? throw new RedisDbException("Problem writing to redis database", command.ShoppingCart.UserName!);
 
         return new SetBasketResult(updatedCart);

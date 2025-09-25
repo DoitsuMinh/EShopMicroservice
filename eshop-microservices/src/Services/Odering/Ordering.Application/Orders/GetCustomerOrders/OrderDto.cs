@@ -4,6 +4,6 @@ public class OrderDto
 {
     public Guid OrderId { get; set; }
     public decimal Value { get; set; }
-    public string Currency { get; set; }
-    public string IsRemoved { get; set; }
+    public string Currency { get; set; } = default!;
+    public string IsRemoved { get; set; } = string.Empty;
 }
