@@ -23,8 +23,6 @@ public class BasketCheckoutIntegrationEventHandler
 
         var command = MapToPlaceCustomerOrderCommand(context.Message);
         await _sender.Send(command);
-
-        throw new NotImplementedException();
     }
 
     private PlaceCustomerOrderCommand MapToPlaceCustomerOrderCommand(BasketCheckoutEvent message)

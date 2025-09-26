@@ -35,7 +35,7 @@ public class OrderPlacedNotificationHandler : INotificationHandler<OrderPlacedNo
 
         var emailMessage = new EmailMessage(
             _emailsSettings.SenderEmail,
-            "dminhvu1999@gmail.com",
+            customerEmail ?? "dminhvu1999@gmail.com",
             "TEST",
             "<p>TEST</p>");
 

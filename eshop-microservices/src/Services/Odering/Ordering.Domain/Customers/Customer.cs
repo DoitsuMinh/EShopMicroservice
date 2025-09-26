@@ -54,7 +54,7 @@ public class Customer : Entity, IAggregateRoot
     {
         CheckRule(new OrderMustHaveAtLeastOneProductRule(orderProductsData));
         CheckRule(new OrderCannotHaveDuplicateProductRule(orderProductsData));
-        CheckRule(new CustomerCannotOrderMoreThan2OrdersOnTheSameDayRule(_orders));
+        //CheckRule(new CustomerCannotOrderMoreThan2OrdersOnTheSameDayRule(_orders));
 
         var order = Order.CreateNew(orderProductsData, allProductPrices, currency, conversionRates);
         

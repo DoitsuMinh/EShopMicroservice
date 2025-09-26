@@ -41,12 +41,13 @@ internal class ProcessOutboxCommandHandler : ICommandHandler<ProcessOutboxComman
         {
             foreach (var message in messagesList)
             {
-                try
-                {
-                    Type type = Assemblies.Application.GetType(message.Type);
-                    var request = JsonConvert.DeserializeObject(message.Data, type) as IDomainEventNotification;
 
-                    using (LogContext.Push(new OutboxMessageContextEnricher(request)))
+                Type type = Assemblies.Application.GetType(message.Type);
+                var request = JsonConvert.DeserializeObject(message.Data, type) as IDomainEventNotification;
+
+                using (LogContext.Push(new OutboxMessageContextEnricher(request)))
+                {
+                    try
                     {
                         await _mediator.Publish(request, cancellationToken);
 
@@ -56,13 +57,13 @@ internal class ProcessOutboxCommandHandler : ICommandHandler<ProcessOutboxComman
                             message.Id
                         });
                     }
+                    catch (Exception ex)
+                    {
+                        // log exception but do not throw as we do not want to stop processing other messages
+                        Console.WriteLine("Exception for: " + ex.InnerException.Message);
+
+                    }
                 }
-                catch(Exception ex)
-                {
-                    // Log the exception or handle it as needed
-                    throw new ApplicationException("An error occurred while processing outbox messages.", ex);
-                }
-                              
             }
         }
 

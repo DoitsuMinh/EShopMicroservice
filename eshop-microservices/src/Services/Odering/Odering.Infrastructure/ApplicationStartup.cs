@@ -57,9 +57,9 @@ public class ApplicationStartup
     }
 
     private static void StartQuartz(
-        string connectionString, 
-        EmailsSettings emailsSetting, 
-        ILogger logger, 
+        string connectionString,
+        EmailsSettings emailsSetting,
+        ILogger logger,
         IExecutionContextAccessor executionContextAccessor)
     {
         try
@@ -72,7 +72,10 @@ public class ApplicationStartup
             container.RegisterModule(new LoggingModule(logger));
             container.RegisterModule(new QuartzModule());
             container.RegisterModule(new DataAccessModule(connectionString));
-            container.RegisterModule(new EmailModule(emailsSetting));
+            if (emailsSetting is not null)
+            {
+                container.RegisterModule(new EmailModule(emailsSetting));
+            }
             container.RegisterModule(new MediatorModule());
             container.RegisterModule(new ProcessingModule());
 
@@ -110,7 +113,8 @@ public class ApplicationStartup
                     .Build();
 
             scheduler.ScheduleJob(processInternalCommandsJob, triggerCommandsProcessing).GetAwaiter().GetResult();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             logger.Error(e, "Error during application startup");
             throw;
@@ -140,15 +144,18 @@ public class ApplicationStartup
             container.RegisterModule(new DomainModule());
 
             // Email module registration
-            if (emailSender != null)
+            if (emailsSettings is not null)
             {
-                container.RegisterModule(new EmailModule(emailSender, emailsSettings));
+                if (emailSender is null)
+                {
+                    container.RegisterModule(new EmailModule(emailSender, emailsSettings));
+                }
+                else
+                {
+                    container.RegisterModule(new EmailModule(emailsSettings));
+                }
             }
-            else
-            {
-                container.RegisterModule(new EmailModule(emailsSettings));
-            }
-
+            // Processing module registration
             container.RegisterModule(new ProcessingModule());
 
             // Register the execution context accessor as a singleton instance
@@ -169,11 +176,12 @@ public class ApplicationStartup
 
             // Return the configured service provider
             return serviceProvider;
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             logger.Error(ex, "Error during application startup");
             throw;
         }
-       
+
     }
 }

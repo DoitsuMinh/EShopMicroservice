@@ -21,17 +21,20 @@ internal class EmailModule : Module
 
     protected override void Load(ContainerBuilder builder)
     {
-        if (_emailSender != null)
-        {
-            builder.RegisterInstance(_emailSender);
-        }
-        else
-        {
-            builder.RegisterType<EmailSender>()
-                .As<IEmailSender>()
-                .InstancePerLifetimeScope();
-        }
+        //if (_emailsSettings != null)
+        //{
+            if (_emailSender != null)
+            {
+                builder.RegisterInstance(_emailSender);
+            }
+            else
+            {
+                builder.RegisterType<EmailSender>()
+                    .As<IEmailSender>()
+                    .InstancePerLifetimeScope();
+            }
 
-        builder.RegisterInstance(_emailsSettings);
-    }
+            builder.RegisterInstance(_emailsSettings);
+        //}
+    }       
 }

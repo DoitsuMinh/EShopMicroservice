@@ -15,6 +15,10 @@ public static class CompositionRoot
 
     internal static ILifetimeScope BeginLifeTimeScope()
     {
+        if (_container is null)
+        {
+            throw new InvalidOperationException("Please rebuild the solution");
+        }
         return _container.BeginLifetimeScope();
     }
 }

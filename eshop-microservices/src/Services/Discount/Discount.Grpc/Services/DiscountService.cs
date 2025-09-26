@@ -13,6 +13,8 @@ public class DiscountService(
 {
     public override async Task<CouponModel> GetDiscount(GetDiscountRequest request, ServerCallContext context)
     {
+        try
+        {
         var coupon = await dbContext
                             .Coupons
                             .FirstOrDefaultAsync(x => x.ProductName == request.ProductName);
@@ -31,6 +33,10 @@ public class DiscountService(
         var couponModel = coupon.Adapt<CouponModel>();
 
         return couponModel;
+        } catch (Exception ex)
+        {
+            throw;
+        }
     }
 
     public override async Task<CouponModel> CreateDiscount(CreateDiscountRequest request, ServerCallContext context)

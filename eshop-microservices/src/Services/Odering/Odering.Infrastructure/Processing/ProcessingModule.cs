@@ -3,11 +3,8 @@ using MediatR;
 using Odering.Infrastructure.Logging;
 using Odering.Infrastructure.Processing.InternalCommands;
 using Ordering.Application.Configuration.Commands;
-using Ordering.Application.Configuration.CQRS.Commands;
 using Ordering.Application.Configuration.DomainEvents;
 using Ordering.Application.Payments;
-using Ordering.Application.Payments.SendEmailAfterPayment;
-using Ordering.Domain.Payments;
 using System.Reflection;
 
 namespace Odering.Infrastructure.Processing;
@@ -20,9 +17,10 @@ public class ProcessingModule : Autofac.Module
     /// <param name="builder"></param>
     protected override void Load(ContainerBuilder builder)
     {
+
         builder.RegisterType<DomainEventsDispatcher>()
-                .As<IDomainEventsDispatcher>()
-                .InstancePerLifetimeScope();
+            .As<IDomainEventsDispatcher>()
+            .InstancePerLifetimeScope();
 
         builder.RegisterAssemblyTypes(typeof(PaymentCreatedNotification).GetTypeInfo().Assembly)
             .AsClosedTypesOf(typeof(IDomainEventNotification<>)).InstancePerDependency();
