@@ -1,4 +1,4 @@
-﻿namespace Ordering.Application.Orders.GetCustomerOrders;
+﻿namespace Ordering.Application.Orders;
 
 public class OrderDto
 {

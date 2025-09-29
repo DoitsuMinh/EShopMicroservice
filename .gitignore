@@ -400,3 +400,5 @@ FodyWeavers.xsd
 # Ignore only local/secret config
 **/appsettings.*.json
 **/secrets.json
+eshop-microservices/src/Services/Discount/Discount.Grpc/discountdb-shm
+eshop-microservices/src/Services/Discount/Discount.Grpc/discountdb-wal

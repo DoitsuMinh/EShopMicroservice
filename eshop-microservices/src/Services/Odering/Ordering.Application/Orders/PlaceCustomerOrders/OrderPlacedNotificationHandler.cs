@@ -39,6 +39,6 @@ public class OrderPlacedNotificationHandler : INotificationHandler<OrderPlacedNo
             "TEST",
             "<p>TEST</p>");
 
-        //await _emailSender.SendEmailAsync(emailMessage);
+        await _emailSender.SendEmailAsync(emailMessage);
     }
 }

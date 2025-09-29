@@ -3,12 +3,11 @@ using MassTransit;
 using MediatR;
 using Ordering.Application.Orders;
 using Ordering.Application.Orders.PlaceCustomerOrders;
-using Ordering.Domain.SeedWork;
 
 namespace Ordering.Application.BasketCheckout;
 
 public class BasketCheckoutIntegrationEventHandler
-    : IConsumer<BasketCheckoutEvent>, IIntergrationEvent
+    : IConsumer<BasketCheckoutEvent>
 {
     private readonly ISender _sender;
 

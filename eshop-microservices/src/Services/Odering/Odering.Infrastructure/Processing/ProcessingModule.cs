@@ -1,7 +1,9 @@
 ﻿using Autofac;
+using MassTransit;
 using MediatR;
 using Odering.Infrastructure.Logging;
 using Odering.Infrastructure.Processing.InternalCommands;
+using Ordering.Application.BasketCheckout;
 using Ordering.Application.Configuration.Commands;
 using Ordering.Application.Configuration.DomainEvents;
 using Ordering.Application.Payments;
@@ -17,6 +19,10 @@ public class ProcessingModule : Autofac.Module
     /// <param name="builder"></param>
     protected override void Load(ContainerBuilder builder)
     {
+        builder.RegisterAssemblyTypes(typeof(BasketCheckoutIntegrationEventHandler).Assembly)
+            .AsClosedTypesOf(typeof(IConsumer<>))
+            .InstancePerDependency();
+        //    .InstancePerLifetimeScope();
 
         builder.RegisterType<DomainEventsDispatcher>()
             .As<IDomainEventsDispatcher>()

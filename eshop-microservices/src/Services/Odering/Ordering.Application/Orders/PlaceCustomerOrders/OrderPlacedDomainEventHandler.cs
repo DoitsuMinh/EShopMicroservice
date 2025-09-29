@@ -8,20 +8,36 @@ namespace Ordering.Application.Orders.PlaceCustomerOrders;
 public class OrderPlacedDomainEventHandler : INotificationHandler<OrderPlacedEvent>
 {
     private readonly IPaymentRepository _paymentRepository;
-    //private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public OrderPlacedDomainEventHandler(IPaymentRepository paymentRepository
-        //, IPublishEndpoint publishEndpoint
+    public OrderPlacedDomainEventHandler(
+        IPaymentRepository paymentRepository,
+        IPublishEndpoint publishEndpoint
         )
     {
         _paymentRepository = paymentRepository;
-        //_publishEndpoint = publishEndpoint; 
+        _publishEndpoint = publishEndpoint; 
     }
 
     public async Task Handle(OrderPlacedEvent domainEvent, CancellationToken cancellationToken)
     {
+        var message = new OrderPlacedMessage
+        {
+            OrderId = domainEvent.OrderId.Value,
+            CustomerId = domainEvent.CustomerId.Value,
+            TotalAmount = domainEvent.Value.Value
+        };
+        await _publishEndpoint.Publish(message);
+
         var newPayment = new Payment(domainEvent.OrderId);
 
         await _paymentRepository.AddAsync(newPayment);
     }
+}
+
+public class OrderPlacedMessage
+{
+    public Guid OrderId { get; set; }
+    public Guid CustomerId { get; set; }
+    public decimal TotalAmount { get; set; }
 }

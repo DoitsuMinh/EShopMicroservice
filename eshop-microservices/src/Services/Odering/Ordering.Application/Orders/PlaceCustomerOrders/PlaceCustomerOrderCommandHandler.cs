@@ -1,4 +1,6 @@
-﻿using Ordering.Application.Configuration.CQRS.Commands;
+﻿using MassTransit;
+using MassTransit.Transports;
+using Ordering.Application.Configuration.CQRS.Commands;
 using Ordering.Application.Configuration.Data;
 using Ordering.Application.Configuration.Emails;
 using Ordering.Domain.Customers;
@@ -15,7 +17,12 @@ public class PlaceCustomerOrderCommandHandler : ICommandHandler<PlaceCustomerOrd
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
     private readonly IForeignExchange _foreignExchange;
     private readonly IUnitOfWork _uow;
-    public PlaceCustomerOrderCommandHandler(ICustomerRepository customerRepository, ISqlConnectionFactory sqlConnectionFactory, IForeignExchange foreignExchange, IUnitOfWork uow)
+
+    public PlaceCustomerOrderCommandHandler(
+        ICustomerRepository customerRepository, 
+        ISqlConnectionFactory sqlConnectionFactory, 
+        IForeignExchange foreignExchange, 
+        IUnitOfWork uow)
     {
         _customerRepository = customerRepository;
         _sqlConnectionFactory = sqlConnectionFactory;
@@ -25,6 +32,7 @@ public class PlaceCustomerOrderCommandHandler : ICommandHandler<PlaceCustomerOrd
 
     public async Task<Guid> Handle(PlaceCustomerOrderCommand command, CancellationToken cancellationToken)
     {
+
         var customer = await _customerRepository.GetByIdAsync(new CustomerId(command.CustomerId));
         
         var allProductPrices = await ProductPriceProvider.GetAllProductPricesAsync(_sqlConnectionFactory.GetOpenConnection());

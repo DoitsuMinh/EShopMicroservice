@@ -34,6 +34,7 @@ public class Order: Entity
        string currency,
        List<ConversionRate> conversionRates)
     {
+   
         // Set the order date to the current time using the system clock  
         _orderDate = SystemClock.Now;
 
@@ -47,8 +48,9 @@ public class Order: Entity
         foreach (var orderProductData in orderProductsData)
         {
             // Find the price of the product matching the product ID and currency  
-            var productPrice = allProductPrices.Single(x => x.ProductId == orderProductData.ProductId &&
-                                                                     x.Price.Currency == currency);
+            var productPrice = allProductPrices.SingleOrDefault(x => x.ProductId == orderProductData.ProductId
+                                                                     && x.Price.Currency == currency)
+                ?? throw new ProductOrderNotFoundException(orderProductData.ProductId);
 
             // Create an order product instance for the given product price and quantity  
             var orderProduct = OrderProduct.CreateForProduct(
@@ -68,7 +70,7 @@ public class Order: Entity
         _status = OrderStatus.Placed;
 
         // Set default isRemoved
-        _isRemoved = false;
+        _isRemoved = false;      
     }
 
     private void CalculateOrderValue()

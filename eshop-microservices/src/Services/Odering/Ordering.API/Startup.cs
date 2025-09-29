@@ -8,6 +8,7 @@ using Odering.Infrastructure;
 using Ordering.API.Configuration;
 using Ordering.API.SeedWork;
 using Ordering.Application;
+using Ordering.Application.BasketCheckout;
 using Ordering.Application.Configuration.Emails;
 using Ordering.Application.Configuration.Validation;
 using Ordering.Domain.SeedWork;
@@ -58,7 +59,7 @@ public class Startup
 
             services.AddHealthChecks().AddNpgSql(_configuration[ConnectionStrings]);
 
-            services.AddMessageBroker(_configuration, Assembly.GetExecutingAssembly());
+            services.AddMessageBroker(_configuration, typeof(BasketCheckoutIntegrationEventHandler).Assembly);
 
             services.AddProblemDetails(x =>
             {

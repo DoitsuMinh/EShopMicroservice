@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using BuildlingBlocks.Messaging.Events;
+using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -47,6 +48,17 @@ public static class Extensions
                 });
 
                 configurator.ConfigureEndpoints(context);
+
+                /* Uncomment the following to MassTransit is working
+                 */                
+                //configurator.ReceiveEndpoint("test-queue", endpoint =>
+                //{
+                //    endpoint.Handler<BasketCheckoutEvent>(async context =>
+                //    {
+                //        await Task.Yield();
+                //        Console.WriteLine("Test consumer triggered");
+                //    });
+                //});
             });
         });
 

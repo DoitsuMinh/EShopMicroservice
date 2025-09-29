@@ -15,22 +15,24 @@ public class EmailSender : IEmailSender
     {
         // Integration with email service
         // use Mailkit
-        var message = new MimeMessage();
-        message.From.Add(new MailboxAddress(_emailsSettings.SenderName, emailMessage.From ?? _emailsSettings.SenderEmail));
-        message.To.Add(MailboxAddress.Parse(emailMessage.To));
-        message.Subject = emailMessage.Subject;
+        await Task.Delay(500); // Replace Thread.Sleep with an asynchronous delay
 
-        message.Body = new TextPart("html")
-        {
-            Text = emailMessage.Content
-        };
+        //var message = new MimeMessage();
+        //message.From.Add(new MailboxAddress(_emailsSettings.SenderName, emailMessage.From ?? _emailsSettings.SenderEmail));
+        //message.To.Add(MailboxAddress.Parse(emailMessage.To));
+        //message.Subject = emailMessage.Subject;
 
-        using var client = new SmtpClient();
-        await client.ConnectAsync(_emailsSettings.SmtpServer, _emailsSettings.SmtpPort, MailKit.Security.SecureSocketOptions.StartTls);
-        await client.AuthenticateAsync(_emailsSettings.SenderEmail, _emailsSettings.Password);
-        await client.SendAsync(message);
-        await client.DisconnectAsync(true);
+        //message.Body = new TextPart("html")
+        //{
+        //    Text = emailMessage.Content
+        //};
 
-        return;
+        //using var client = new SmtpClient();
+        //await client.ConnectAsync(_emailsSettings.SmtpServer, _emailsSettings.SmtpPort, MailKit.Security.SecureSocketOptions.StartTls);
+        //await client.AuthenticateAsync(_emailsSettings.SenderEmail, _emailsSettings.Password);
+        //await client.SendAsync(message);
+        //await client.DisconnectAsync(true);
+
+        //return;
     }
 }
