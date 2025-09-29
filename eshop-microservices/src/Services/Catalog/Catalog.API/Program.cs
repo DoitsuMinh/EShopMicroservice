@@ -41,6 +41,11 @@ var app = builder.Build();
 // Configure the HTTP request pipeline
 app.MapCarter();
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
 app.UseExceptionHandler(options => { });
 
 app.UseHealthChecks("/health",

@@ -137,6 +137,7 @@ public class Startup
         else
         {
             //app.UseProblemDetails();
+            app.UseHsts();
         }
 
         app.UseHealthChecks("/health",

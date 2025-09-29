@@ -69,6 +69,10 @@ var app = builder.Build();
 
 app.MapCarter();
 app.UseExceptionHandler(options => { });
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
 
 app.UseHealthChecks("/health",
     new HealthCheckOptions
