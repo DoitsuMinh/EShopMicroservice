@@ -22,7 +22,6 @@ public class ProcessingModule : Autofac.Module
         builder.RegisterAssemblyTypes(typeof(BasketCheckoutIntegrationEventHandler).Assembly)
             .AsClosedTypesOf(typeof(IConsumer<>))
             .InstancePerDependency();
-        //    .InstancePerLifetimeScope();
 
         builder.RegisterType<DomainEventsDispatcher>()
             .As<IDomainEventsDispatcher>()
