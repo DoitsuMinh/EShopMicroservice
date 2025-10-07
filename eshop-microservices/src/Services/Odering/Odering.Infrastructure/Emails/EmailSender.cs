@@ -33,6 +33,6 @@ public class EmailSender : IEmailSender
         //await client.SendAsync(message);
         //await client.DisconnectAsync(true);
 
-        //return;
+        return;
     }
 }

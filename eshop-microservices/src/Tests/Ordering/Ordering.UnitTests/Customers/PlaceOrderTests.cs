@@ -97,7 +97,7 @@ public class PlaceOrderTests : TestBase
                 conversionRates);
         }
         // Assert
-        AssertBrokenRule<CustomerCannotOrderMoreThan20OrdersOnTheSameDayRule>(() =>
+        AssertBrokenRule<CustomerCannotOrderMoreThan2OrdersOnTheSameDayRule>(() =>
         {
             customer.PlacedOrder(
                 orderProductsData,

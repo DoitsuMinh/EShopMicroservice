@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Odering.Infrastructure;
+using Odering.Infrastructure.Caching;
+using Ordering.Application.Configuration.Emails;
 using Serilog.Core;
 
 namespace Ordering.IntegrationTests.SeedWork;
@@ -23,11 +25,21 @@ public class TestBase
         await ClearDatabase(connection);
 
         ExecutionContext = new ExecutionContextMock();
-
+        //public static IServiceProvider Initialize(
+        //  IServiceCollection services,
+        //  string connectionString,
+        //  ICacheStore cacheStore,
+        //  IEmailSender emailSender,
+        //  EmailsSettings emailsSetting,
+        //  ILogger logger,
+        //  IExecutionContextAccessor executionContextAccessor,
+        //  bool runQuartz = true)
         ApplicationStartup.Initialize(
             new ServiceCollection(),
             ConnectionString,
             new CacheStore(),
+            null,
+            null,
             Logger.None,
             ExecutionContext);
     }

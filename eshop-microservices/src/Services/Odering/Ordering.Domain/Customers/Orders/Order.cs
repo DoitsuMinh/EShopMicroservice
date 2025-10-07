@@ -17,7 +17,7 @@ public class Order: Entity
     private bool _isRemoved;
     private MoneyValue _value;
     private MoneyValue _valueInAUD;
-    private List<OrderProduct> _orderProducts;
+    private readonly List<OrderProduct> _orderProducts = [];
     private OrderStatus _status;
     private DateTime _orderDate;
     private DateTime? _orderChangeDate;
@@ -42,7 +42,7 @@ public class Order: Entity
         Id = new OrderId(Guid.NewGuid());
 
         // Initialize the list of order products  
-        _orderProducts = new List<OrderProduct>();
+        //_orderProducts = new List<OrderProduct>();
 
         // Iterate through the provided order product data  
         foreach (var orderProductData in orderProductsData)
