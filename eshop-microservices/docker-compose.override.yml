@@ -28,12 +28,17 @@ services:
     environment:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
-        - POSTGRES_DB=OrderDb
+        - POSTGRES_DB=OrderDB
     restart: always
     ports:
         - "5432:5432"
     volumes:
         - postgres_order:/var/lib/postgresql/data/
+    healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
    
   messagebroker:
     container_name: messagebroker
@@ -107,12 +112,12 @@ services:
       - MessageBroker__UserName=guest
       - MessageBroker__Password=guest
       - FeatureManagement__OrderFullfilment=true
+    ports:
+      - "5003:8080"
+      - "5053:8081"
     depends_on:
       - orderdb
       - messagebroker
-    ports:
-      - "6003:8080"
-      - "6063:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro

@@ -40,12 +40,12 @@ public static class Extensions
             {
                 config.AddConsumers(assembly);
             }
-
+            Console.WriteLine($"RabbitMQ Host: {configuration["MessageBroker:Host"]}");
             config.UsingRabbitMq((context, configurator) =>
             {
                 configurator.Host(new Uri(configuration["MessageBroker:Host"]!), host =>
                 {
-                    host.Username(configuration["MessageBroker:Username"]);
+                    host.Username(configuration["MessageBroker:UserName"]);
                     host.Password(configuration["MessageBroker:Password"]);
                 });
 
