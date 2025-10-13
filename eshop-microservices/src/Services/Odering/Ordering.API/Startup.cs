@@ -16,7 +16,6 @@ using Ordering.Infrastructure.Caching;
 using Serilog;
 using Serilog.Formatting.Compact;
 using Serilog.Sinks.SystemConsole.Themes;
-using System.Reflection;
 using ILogger = Serilog.ILogger;
 
 
@@ -37,10 +36,11 @@ public class Startup
         _logger.Information("Starting app ...");
 
         _configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .AddJsonFile($"appsettings.{env.EnvironmentName}.json")
-            .AddJsonFile($"hosting.{env.EnvironmentName}.json")
-            .AddUserSecrets<Startup>() // Load user secrets in development  
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"hosting.{env.EnvironmentName}.json", optional: true)
+            //.AddUserSecrets<Startup>() // Load user secrets in development  
+            .AddEnvironmentVariables() 
             .Build();
     }
 
@@ -128,18 +128,21 @@ public class Startup
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         _logger.Information("Configuring application ...");
+        
         app.UseMiddleware<CorrelationMiddleware>();
         app.UseProblemDetails();
+        
         if (env.IsDevelopment())
         {
             //app.UseDeveloperExceptionPage();
         }
         else
         {
-            //app.UseProblemDetails();
+            app.UseProblemDetails();
             app.UseHsts();
         }
 
+        // Move health checks BEFORE routing
         app.UseHealthChecks("/health",
             new HealthCheckOptions
             {
