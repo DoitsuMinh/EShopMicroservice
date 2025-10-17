@@ -52,7 +52,7 @@ public class CheckoutBasketHandler
         await _publishEndpoint.Publish(eventMessage, cancellationToken);
 
         // Step 4
-        //await _cartRepository.DeleteCartAsync(command.BasketCheckoutDto.UserName, cancellationToken);
+        await _cartRepository.DeleteCartAsync(command.BasketCheckoutDto.UserName, cancellationToken);
 
         return new CheckoutBasketResult(true);
     }

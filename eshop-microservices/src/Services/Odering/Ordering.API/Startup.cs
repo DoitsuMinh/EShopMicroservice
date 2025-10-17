@@ -39,7 +39,7 @@ public class Startup
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
             .AddJsonFile($"hosting.{env.EnvironmentName}.json", optional: true)
-            //.AddUserSecrets<Startup>() // Load user secrets in development  
+            .AddUserSecrets<Startup>() // Load user secrets in development  
             .AddEnvironmentVariables() 
             .Build();
     }
