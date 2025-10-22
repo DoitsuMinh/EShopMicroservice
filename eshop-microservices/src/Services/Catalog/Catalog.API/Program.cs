@@ -43,7 +43,7 @@ app.MapCarter();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseHsts();
+    //app.UseHsts();
 }
 
 app.UseExceptionHandler(options => { });

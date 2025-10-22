@@ -71,7 +71,7 @@ app.MapCarter();
 app.UseExceptionHandler(options => { });
 if (!app.Environment.IsDevelopment())
 {
-    app.UseHsts();
+    //app.UseHsts();
 }
 
 app.UseHealthChecks("/health",

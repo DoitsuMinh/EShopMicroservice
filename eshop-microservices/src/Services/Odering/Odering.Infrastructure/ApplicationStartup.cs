@@ -2,8 +2,6 @@
 using Autofac.Extensions.DependencyInjection;
 using Autofac.Extras.CommonServiceLocator;
 using CommonServiceLocator;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Odering.Infrastructure.Caching;
 using Odering.Infrastructure.Database;
 using Odering.Infrastructure.Domain;
@@ -13,7 +11,6 @@ using Odering.Infrastructure.Processing;
 using Odering.Infrastructure.Processing.InternalCommands;
 using Odering.Infrastructure.Processing.Outbox;
 using Odering.Infrastructure.Quartz;
-using Odering.Infrastructure.SeedWork;
 using Ordering.Application;
 using Ordering.Application.Configuration.Emails;
 using Quartz;
@@ -81,14 +78,6 @@ public class ApplicationStartup
 
 
             container.RegisterInstance(executionContextAccessor);
-            container.Register(c =>
-            {
-                var dbContextOptionsBuilder = new DbContextOptionsBuilder<OrdersContext>();
-                dbContextOptionsBuilder.UseNpgsql(connectionString);
-
-                dbContextOptionsBuilder.ReplaceService<IValueConverterSelector, StronglyTypedIdValueConverterSelector>();
-                return new OrdersContext(dbContextOptionsBuilder.Options);
-            }).AsSelf().InstancePerLifetimeScope();
 
             scheduler.JobFactory = new JobFactory(container.Build());
 

@@ -139,7 +139,7 @@ public class Startup
         else
         {
             app.UseProblemDetails();
-            app.UseHsts();
+            //app.UseHsts();
         }
 
         // Move health checks BEFORE routing

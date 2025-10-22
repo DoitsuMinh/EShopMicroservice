@@ -23,7 +23,7 @@ internal class ProcessOutboxCommandHandler : ICommandHandler<ProcessOutboxComman
 
     public async Task<Unit> Handle(ProcessOutboxCommand command, CancellationToken cancellationToken)
     {
-        var connection = _sqlConnectionFactory.GetOpenConnection();
+        using var connection = _sqlConnectionFactory.GetOpenConnection();
         const string sql = @"
             SELECT ""Id"", ""Type"", ""Data""
             FROM app.outboxmessages
@@ -61,6 +61,7 @@ internal class ProcessOutboxCommandHandler : ICommandHandler<ProcessOutboxComman
                     {
                         // log exception but do not throw as we do not want to stop processing other messages
                         Console.WriteLine("Exception for: " + ex.InnerException.Message);
+                        throw;
 
                     }
                 }
@@ -82,7 +83,7 @@ internal class ProcessOutboxCommandHandler : ICommandHandler<ProcessOutboxComman
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
             logEvent.AddOrUpdateProperty(
-                new LogEventProperty("Context", new ScalarValue($"OutboxMessage: {_notification.Id.ToString()}")));
+                new LogEventProperty("Context", new ScalarValue($"OutboxMessage: {_notification.Id}")));
         }
     }
 }
