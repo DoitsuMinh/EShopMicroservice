@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.RateLimiting;
-using System.Runtime;
 
 var builder = WebApplication.CreateBuilder(args);
-
-bool isServerGC = GCSettings.IsServerGC;
-Console.WriteLine($"Server GC is {(isServerGC ? "enabled" : "disabled")}");
 
 // if development environment, use appsettings.Local.json
 if (builder.Environment.IsDevelopment())

@@ -3,6 +3,7 @@ using HealthChecks.UI.Client;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using Odering.Infrastructure;
 using Ordering.API.Configuration;
@@ -11,6 +12,7 @@ using Ordering.Application;
 using Ordering.Application.BasketCheckout;
 using Ordering.Application.Configuration.Emails;
 using Ordering.Application.Configuration.Validation;
+using Ordering.Domain.ForeignExchange.ExternalService;
 using Ordering.Domain.SeedWork;
 using Ordering.Infrastructure.Caching;
 using Serilog;
@@ -53,7 +55,14 @@ public class Startup
 
             services.AddMemoryCache();
 
-            services.AddHttpClient();
+            services.Configure<FreeCurrencyApiSettings>(_configuration.GetSection("FreeCurrencyApi"));
+            services.AddHttpClient<FreeCurrencyApiSettings>("FreeCurrencyApi", (serviceProvider, client) =>
+            {
+                var options = serviceProvider.GetRequiredService<IOptions<FreeCurrencyApiSettings>>().Value;
+                
+                client.BaseAddress = new Uri(options.BaseUrl);
+                client.Timeout = TimeSpan.FromSeconds(options.TimeoutInSeconds);
+            });
 
             services.AddSwaggerDocumentation();
 

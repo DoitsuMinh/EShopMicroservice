@@ -1,30 +1,42 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Odering.Infrastructure.Caching;
 using Ordering.Domain.ForeignExchange;
 using Ordering.Domain.ForeignExchange.ExternalService;
 
 namespace Odering.Infrastructure.Domain.ForeignExchanges;
 
-public class ForeignExchange : IForeignExchange
+public class ForeignExchange : IForeignExchange, IDisposable
 {
     private readonly ICacheStore _cacheStore;
     private readonly HttpClient _httpClient;
-    private readonly IConfiguration _config;
+    private readonly FreeCurrencyApiSettings _settings;
 
-    public ForeignExchange(ICacheStore cacheStore, IHttpClientFactory httpClientFactory, IConfiguration config)
+    // Semaphore to ensure thread-safe access to the cache
+    private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
+    public ForeignExchange(ICacheStore cacheStore, IHttpClientFactory httpClientFactory, IOptions<FreeCurrencyApiSettings> options)
     {
         _cacheStore = cacheStore;
         _httpClient = httpClientFactory.CreateClient("FreeCurrencyApi");
-        _config = config;
-        _httpClient.BaseAddress = new Uri(_config["FreeCurrencyApi:BaseUrl"].ToString());
+        _settings = options.Value;
     }
 
     public async Task<List<ConversionRate>> GetConversionRatesAsync()
     {
+        // try cache without locking
+        var ratesCache = _cacheStore.Get(new ConversionRatesCacheKey());
+        if (ratesCache != null)
+        {
+            return ratesCache.Rates;
+        }
+
+        // Only lock API call and cache update
+        await _semaphore.WaitAsync();
         try
         {
-            var ratesCache = _cacheStore.Get(new ConversionRatesCacheKey());
-
+            // double check
+            ratesCache = _cacheStore.Get(new ConversionRatesCacheKey());
             if (ratesCache != null)
             {
                 return ratesCache.Rates;
@@ -43,17 +55,22 @@ public class ForeignExchange : IForeignExchange
         {
             throw new InvalidOperationException("Failed to retrieve conversion rates.", ex);
         }
+        finally
+        {
+            _semaphore.Release();
+        }
+    }
+
+    public void Dispose()
+    {
+        _semaphore?.Dispose();
     }
 
     private async Task<List<ConversionRate>> GetConversionRatesFromExternalApiAsync()
     {
-        var request = new FreeCurrencyApiRequest(
-            _config["FreeCurrencyApi:ApiKey"] ?? string.Empty,
-            _config["FreeCurrencyApi:BaseCurrency"] ?? string.Empty,
-            _config["FreeCurrencyApi:SupportedCurrencies"]?.Split(',').ToList() ?? new List<string>()
-            );
+        var url = $"latest?apikey={_settings.ApiKey}&base_currency={_settings.BaseCurrency}&currencies={string.Join(",", _settings.SupportedCurrencies)}";
 
-        var response = await GetLastesRatesAsync(request);
+        var response = await GetLastesRatesAsync(url);
 
         var rates = new List<ConversionRate>();
 
@@ -62,12 +79,12 @@ public class ForeignExchange : IForeignExchange
             foreach (var rate in response.Data)
             {
                 // Forward conversion (Base currency to target currency)
-                rates.Add(new ConversionRate(request.BaseCurrency, rate.Key, rate.Value));
+                rates.Add(new ConversionRate(_settings.BaseCurrency, rate.Key, rate.Value));
 
                 // Reverse conversion (Target currency to base currency)
                 if (rate.Value != 0)
                 {
-                    rates.Add(new ConversionRate(rate.Key, request.BaseCurrency, 1 / rate.Value));
+                    rates.Add(new ConversionRate(rate.Key, _settings.BaseCurrency, 1 / rate.Value));
                 }
                 else
                 {
@@ -78,14 +95,10 @@ public class ForeignExchange : IForeignExchange
         return rates;
     }
 
-    private async Task<FreeCurrencyApiResponse> GetLastesRatesAsync(FreeCurrencyApiRequest request, CancellationToken cancellationToken = default)
+    private async Task<FreeCurrencyApiResponse> GetLastesRatesAsync(string url, CancellationToken cancellationToken = default)
     {
         try
         {
-            var currencies = string.Join(",", request.Currencies);
-
-            var url = request.URL;
-
             var response = await _httpClient.GetAsync(url, cancellationToken);
             response.EnsureSuccessStatusCode();
 
